@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="douzone_webapp.douzone_webapp-1.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/build/libs/douzone_webapp-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

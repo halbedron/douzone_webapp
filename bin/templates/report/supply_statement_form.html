@@ -1,0 +1,496 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  th:fragment="supplyStatement">
+	<div class="container-fluid" >
+		<div class="row text-center">
+			<h3><b>종 돈 공 급 내 역 서</b></h3>
+		</div>
+		<div class="row">
+			<table class="table table-bordered table-condensed table-responsive">
+				<thead>
+					<tr>
+						<th colspan="2"  class="text-center" >공급자</th>
+						<th colspan="2"  class="text-center" >인수자</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>상&nbsp;&nbsp;&nbsp;&nbsp;호 :</td>
+						<td id="nm_bizarea"></td>
+						<td>상호[농장명] :</td>
+						<td id="ln_partner"></td>
+					</tr>
+					<tr>
+						<td>대표자 :</td>
+						<td id="nm_master"></td>
+						<td>대표자[성명] :</td>
+						<td id="nm_ceo"></td>
+					</tr>
+					<tr>
+						<td>주&nbsp;&nbsp;&nbsp;&nbsp;소 :</td>
+						<td id="addr"></td>
+						<td>주&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;소 :</td>
+						<td id="addr1"></td>
+					</tr>
+					<tr>
+						<td>사업자등록번호 :</td>
+						<td id="no_bizarea"></td>
+						<td>사업자[주민]번호 :</td>
+						<td id="no_company"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="row" style="padding-bottom: 5px;">
+			<div class="col-xs-2">※  정산내역</div>
+			<div class="col-xs-offset-6 col-xs-2 text-right">공급일자 :</div>
+			<div class="col-xs-2 text-right" id="dt_end1"></div>
+		</div>
+		<div class="row">
+			<table class="table table-bordered table-condensed table-responsive text-center">
+				<tbody>
+					<tr>
+						<th class="text-center"  id="nm_sex"></th>
+						<td colspan="5"  id="nm_item"></td>
+					</tr>
+					<tr>
+						<th rowspan="2"  class="text-center"  style="padding-top: 25px;">정상공급</th>
+						<th class="text-center" >두수</th>
+						<th class="text-center" >체중</th>
+						<th class="text-center" >평균체중</th>
+						<th class="text-center"  rowspan="2" width="10%"  style="padding-top: 25px;">금액</th>
+						<th class="text-center"  rowspan="2" width="50%"  style="padding-top: 25px;">비고</th>
+					</tr>
+					<tr>
+						<th class="text-right"  id="qty_ship_norm"></th>
+						<th class="text-right"  id="wei_norm"></th>
+						<th class="text-right"  id="wei_norm_avg"></th>
+					</tr>
+					<tr>
+						<td id="TITLE0" class="data_title" ></td>
+						<td class="text-right"  colspan="3" id="PRC_UNIT_PIG"></td>
+						<td></td>
+						<td class="text-left data_remark"  id="REMARK1"></td>
+					</tr>
+					<tr>
+						<td>공급단가</td>
+						<td class="text-right warning"  colspan="3" id="PRC_SUPPLY"></td>
+						<td></td>
+						<td class="text-left data_remark"  id="REMARK2"></td>
+					</tr>
+					<tr>
+						<td id="TITLE1"  class="data_title" ></td>
+						<td colspan="2"  id="TEXT1" class="data_text" ></td>
+						<td class="text-right data_text" id="TEXT2" ></td>
+						<td id="TEXT13" class="data_text" ></td>
+						<td class="text-left data_remark"  id="REMARK6" ></td>
+					</tr>
+					<tr>
+						<td id="TITLE2" class="data_title" ></td>
+						<td colspan="2"  id="TEXT3" class="data_text" ></td>
+						<td class="text-right data_text"  id="TEXT4" ></td>
+						<td id="TEXT14" class="data_text" ></td>
+						<td class="text-left data_remark"  id="REMARK7" ></td>
+					</tr>
+					<tr>
+						<td id="TITLE3" class="data_title" ></td>
+						<td colspan="2"  id="TEXT5" class="data_text" ></td>
+						<td class="text-right data_text" id="TEXT6"></td>
+						<td id="DC_AMT"></td>
+						<td class="text-left data_remark"  id="REMARK8" ></td>
+					</tr>
+					<tr>
+						<td id="TITLE4" class="data_title" ></td>
+						<td colspan="2" id="TEXT7" class="data_text" ></td>
+						<td class="text-right data_text"  id="TEXT8" ></td>
+						<td></td>
+						<td class="text-left data_remark"  id="REMARK9" ></td>
+					</tr>
+					<tr>
+						<td id="TITLE5" class="data_title" ></td>
+						<td colspan="2" id="TEXT9" class="data_text" ></td>
+						<td class="text-right data_text" id="TEXT10" ></td>
+						<td></td>
+						<td class="text-left data_remark"  id="REMARK10" ></td>
+					</tr>
+					<tr>
+						<td id="TITLE6" class="data_title" ></td>
+						<td colspan="2" id="TEXT11" class="data_text" ></td>
+						<td class="text-right data_text" id="TEXT12" ></td>
+						<td></td>
+						<td class="text-left data_remark"  id="REMARK11" ></td>
+					</tr>
+					<tr>
+						<td id="TITLE7" class="data_title" ></td>
+						<td colspan="2"></td>
+						<td class="text-right" id="PRC_UNIT_DC"></td>
+						<td class="text-right warning" id="AMT_DC"></td>
+						<td class="text-left" ></td>
+					</tr>
+					<tr>
+						<td>정산금액</td>
+						<td colspan="3"></td>
+						<td class="text-right warning" id="AMT"></td>
+						<td class="text-left data_remark"  id="REMARK3" ></td>
+					</tr>
+					<tr>
+						<td>기타정산</td>
+						<td colspan="3"></td>
+						<td class="text-right" id="AMT_DED_ETC"></td>
+						<td class="text-left data_remark"  id="REMARK4" ></td>
+					</tr>
+					<tr>
+						<td>하자처리</td>
+						<td class="text-right" id="QTY_CLAIM"></td>
+						<td class="text-right" id="WEI_CLAIM"></td>
+						<td class="text-right" id="WEI_CLAIM_AVG"></td>
+						<td id="AMT_CLAIM"></td>
+						<td class="text-left data_remark"  id="REMARK5" ></td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr class="warning">
+						<th class="text-center">합계</th>
+						<th class="text-right"  id="qty_sum">24</th>
+						<th class="text-right"  id="wei_sum">2,340</th>
+						<th class="text-right" id="AVG_TOTAL"></th>
+						<th class="text-right" id="AMT_LAST"></th>
+						<th class="text-left" >정산금액 + 기타정산 + 하자처리</th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+		<div class="row">
+			<table class="table table-bordered table-condensed table-responsive text-center">
+				<tr>
+					<td>전월이월</td>
+					<td>금일매출</td>
+					<td>잔고</td>
+					<td width="40%">비고</td>
+				</tr>
+				<tr class="warning">
+					<th class="text-right"  id="PRC_REPAY"></th>
+					<th class="text-right" id="PRC_THIS"></th>
+					<th class="text-right" id="PRC_SUM"></th>
+					<th></th>
+				</tr>
+			</table>
+		</div>
+		<div class="row">
+			<table class="table table-bordered table-condensed table-responsive text-center">
+				<tr>
+					<td>항생제</td>
+					<td>제품명</td>
+					<td>사용량</td>
+					<td>투약일자</td>
+					<td>휴약기간</td>
+					<td>물류계장</td>
+					<td>차량번호</td>
+				</tr>
+				<tr>
+					<td>-</td>
+					<td id="NM_ANTIBIO"></td>
+					<td id="QTY_ANTIBIO"></td>
+					<td></td>
+					<td id="DAYS_VACCINE"></td>
+					<td id="NM_DRIVER"></td>
+					<td class="text-left"  id="CAR_NUMBER"></td>
+				</tr>
+			</table>
+		</div>
+		<div class="row">
+			<table id="team_info_table" class="text-center" style="border: 1px solid #ddd ; background-color: #fcf8e3; width: -webkit-fill-available;" >
+				<tbody>
+				<tr>
+					<td colspan="4" style="border-bottom: 1px solid #ddd;">(주)다비육종 고객지원본부 종돈팀</td>
+					<td rowspan="3" style="border-left: 1px solid #ddd;">
+						<span id="NM_BANK_TITLE"></span><br/>
+						<span id="NM_BANK"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="BANK"></span><br/>
+						<span id="NM_OWNER"></span>
+					</td>
+				</tr>
+				<tr style="border-bottom: 1px solid #ddd;">
+					<td>전&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;화</td>
+					<td id="NO_TEL"></td>
+					<td>팩스</td>
+					<td id="NO_FAX"></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #ddd;">
+					<td>영업담당</td>
+					<td id="NO_EMP"></td>
+					<td id="NM_FLAG"></td>
+					<td id="EMP_TEL"></td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="row" style="padding-top: 5px;">
+			<div class="col-xs-3">※  종돈내역(첨부)</div>
+			<div class="col-xs-offset-5 col-xs-2 text-right">공급일자 :</div>
+			<div class="col-xs-2 text-right"  id="dt_end2"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-6"  style="padding-right: 0;">
+			<div class="table-bordered">
+				<table id="odd_grid" class="table table-condensed"  data-sorting="true" style="font-size: 14px; margin-bottom: 0;"></table>
+			</div>
+		</div>
+		<div class="col-xs-6"  style="padding-left: 0;">
+			<div class="table-bordered">
+				<table id="even_grid" class="table table-condensed"  data-sorting="true" style="font-size: 14px; margin-bottom: 0;"></table>
+			</div>
+		</div>
+	</div>
+<style>
+#team_info_table > tbody > tr > td {
+	padding: 5px;
+}
+</style>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var supplyStatementForm = {
+		oddGrid: null,
+		evenGrid: null,
+		data: [],
+		functionIdList: [],
+		src: "",
+}
+function supplyStatementFormInit() {
+	supplyStatementFormGrid();
+	supplyStatementFormEventBine();
+}
+
+function supplyStatementFormGrid() {
+	
+	$('#odd_grid').footable({
+		"empty": "",
+		"columns": [
+			{
+				title: '번호',
+				name: 'ROW_COUNT',
+				style:{
+					"width": "70px",
+					"text-align" : "center",
+				},
+				"sorted": true,
+			} ,{
+				title: '품종',
+				name: 'NM_RACE',
+			} ,{
+				title: '성별',
+				name: 'CD_SEX',
+			}, {
+				title: '태그번호',
+				name: 'NO_TAG',
+			}, {
+				title: '개체번호',
+				name: 'CD_EAR',
+			}, {
+				title: '생년월일',
+				name: 'DT_BIRTH',
+				formatter: function(value, options, rowData) {
+					 return makeDateFormat(value);
+	            }
+			}
+		],
+		"rows": []
+	});
+	supplyStatementForm.oddGrid = FooTable.get('#odd_grid');
+	
+	$('#even_grid').footable({
+		"empty": "",
+		"columns": [
+			{
+				title: '번호',
+				name: 'ROW_COUNT',
+				style:{
+					"width": "70px",
+					"text-align" : "center",
+				},
+				"sorted": true,
+			} ,{
+				title: '품종',
+				name: 'NM_RACE',
+			} ,{
+				title: '성별',
+				name: 'CD_SEX',
+			}, {
+				title: '태그번호',
+				name: 'NO_TAG',
+			}, {
+				title: '개체번호',
+				name: 'CD_EAR',
+			}, {
+				title: '생년월일',
+				name: 'DT_BIRTH',
+				formatter: function(value, options, rowData) {
+					 return makeDateFormat(value);
+	            }
+			}
+		],
+		"rows": []
+	});
+	supplyStatementForm.evenGrid = FooTable.get('#even_grid');
+}
+
+function supplyStatementFormSetData(data, functionList) {
+	var prc_repay, prc_this;
+	var dt_ship ,cd_partner;
+	for(var i =0; i < functionList.length; i++) {
+		var dataObj = new Object();
+		switch(functionList[i]) {
+		case "UP_CG_MOB_PIG_LIST_RPT1" :
+			dataObj = data[i].UP_CG_MOB_PIG_LIST_RPT1[0];
+			console.log(dataObj);
+			$("#nm_bizarea").text(dataObj.NM_BIZAREA);
+			$("#ln_partner").text(dataObj.LN_PARTNER);
+			$("#nm_master").text(dataObj.NM_MASTER);
+			$("#nm_ceo").text(dataObj.NM_CEO);
+			$("#addr").text(dataObj.ADDR);
+			$("#addr1").text(dataObj.ADDR1);
+			$("#no_bizarea").text(makeNoCompanyFormat(dataObj.NO_BIZAREA));
+			$("#no_company").text(makeNoCompanyFormat(dataObj.NO_COMPANY));
+			$("#dt_end1").text(makeDateFormat(dataObj.DT_SHIP));
+			$("#dt_end2").text(makeDateFormat(dataObj.DT_SHIP));
+			dt_ship = dataObj.DT_SHIP;
+			cd_partner = dataObj.CD_PARTNER;
+			break;
+		case "UP_CG_MOB_PIG_LIST_RPT2" :
+			dataObj = data[i].UP_CG_MOB_PIG_LIST_RPT2[0];
+			console.log(dataObj);
+			$("#nm_sex").text(dataObj.NM_SEX);
+			$("#nm_item").text(dataObj.NM_ITEM);
+			$("#qty_ship_norm").text(dataObj.QTY_SHIP_NORM);
+			$("#wei_norm").text(dataObj.WEI_NORM);
+			$("#wei_norm_avg").text(dataObj.WEI_NORM_AVG);
+			for(var j =0; j < $(".data_title").length; j++) {
+				var dataTitle = "TITLE" + j;
+				$("#"+dataTitle).text(dataObj[dataTitle])
+			}
+			for(var k =0; k < $(".data_text").length; k++) {
+				var dataText = "TEXT" + k;
+				if(isNaN(dataObj[dataText])) {
+					$("#"+dataText).text(dataObj[dataText])
+				} else {
+					$("#"+dataText).text(addComma(dataObj[dataText]))
+				}
+			}
+			for(var l =0; l < $(".data_remark").length; l++) {
+				var dataRemark = "REMARK" + l;
+				$("#"+dataRemark).text(dataObj[dataRemark])
+			}
+			$("#DC_AMT").text(dataObj.DC_AMT);
+			$("#PRC_SUPPLY").text(addComma(dataObj.PRC_SUPPLY));
+			$("#PRC_UNIT_DC").text(addComma(dataObj.PRC_UNIT_DC));
+			$("#PRC_UNIT_PIG").text(addComma(dataObj.PRC_UNIT_PIG));
+			$("#AMT").text(addComma(dataObj.AMT));
+			$("#AMT_CLAIM").text(addComma(dataObj.AMT_CLAIM));
+			$("#AMT_DC").text(addComma(dataObj.AMT_DC));
+			$("#AMT_DED_ETC").text(addComma(dataObj.AMT_DED_ETC));
+			$("#AMT_LAST").text(addComma(dataObj.AMT_LAST));
+			prc_this = dataObj.AMT_LAST;
+			$("#PRC_THIS").text(addComma(prc_this));
+			$("#AVG_TOTAL").text(dataObj.AVG_TOTAL);
+			$("#QTY_CLAIM").text(dataObj.QTY_CLAIM);
+			$("#WEI_CLAIM").text(dataObj.WEI_CLAIM);
+			$("#WEI_CLAIM_AVG").text(dataObj.WEI_CLAIM_AVG);
+			$("#qty_sum").text((dataObj.QTY_SHIP_NORM*1) + (dataObj.QTY_CLAIM*1));
+			$("#wei_sum").text((dataObj.WEI_NORM*1) + (dataObj.WEI_CLAIM*1));
+			break;
+		case "UP_CG_MOB_PIG_LIST_RPT3" :
+			dataObj = data[i].UP_CG_MOB_PIG_LIST_RPT3[0];
+			console.log(dataObj);
+			prc_repay = dataObj.PRC_REPAY;
+			$("#PRC_REPAY").text(addComma(prc_repay));
+			break;
+		case "UP_CG_MOB_PIG_LIST_RPT4" :
+			dataObj = data[i].UP_CG_MOB_PIG_LIST_RPT4[0];
+			console.log(dataObj);
+			$("#NM_ANTIBIO").text(dataObj.NM_ANTIBIO);
+			$("#QTY_ANTIBIO").text(dataObj.QTY_ANTIBIO);
+			$("#DAYS_VACCINE").text(dataObj.DAYS_VACCINE);
+			$("#NM_DRIVER").text(dataObj.NM_DRIVER);
+			$("#CAR_NUMBER").text(dataObj.CAR_NUMBER);
+			break;
+		case "UP_CG_MOB_PIG_LIST_RPT5" :
+			dataObj = data[i].UP_CG_MOB_PIG_LIST_RPT5[0];
+			console.log(dataObj);
+			$("#NM_BANK_TITLE").text(dataObj.NM_BANK_TITLE);
+			$("#NM_BANK").text(dataObj.NM_BANK);
+			$("#BANK").text(dataObj.BANK);
+			$("#NM_OWNER").text(dataObj.NM_OWNER);
+			$("#NO_TEL").text(dataObj.NO_TEL);
+			$("#NO_FAX").text(dataObj.NO_FAX);
+			$("#NO_EMP").text(dataObj.NO_EMP);
+			$("#NM_FLAG").text(dataObj.NM_FLAG);
+			$("#EMP_TEL").text(dataObj.EMP_TEL);
+			break;
+		case "UP_CG_MOB_PIG_LIST_RPT6" :
+			dataObj = data[i].UP_CG_MOB_PIG_LIST_RPT6;
+			console.log(dataObj);
+			var oddData = [];
+			var evenData = [];
+			for(var i in dataObj) {
+				if(dataObj[i].ROW_COUNT%2 == 0 ) {
+					evenData.push(dataObj[i]);
+				} else {
+					oddData.push(dataObj[i]);
+				}
+			}
+			supplyStatementForm.oddGrid.loadRows(oddData);
+			supplyStatementForm.evenGrid.loadRows(evenData);
+			break;
+		}
+	}
+	
+	var prc_sum = Num(prc_repay) + Num(prc_this);
+	$("#PRC_SUM").text(addComma(prc_sum.toString()));
+	
+	html2canvas(document.querySelector("#supplyStatementCanvas")).then(canvas => {
+//			var image = document.getElementById("supply_Img");
+//			image.src = canvas.toDataURL("image/png");
+		
+		var cavImgStr = canvas.toDataURL('image/png', 1.0);
+		var cd_company = userInfo().CD_COMPANY;
+		$.post('/canv/supplyUploadProc'
+			, {strImg : cavImgStr, cd_company: cd_company, dt_ship: dt_ship, cd_partner: cd_partner}
+			, function(data) {
+				console.log(data);
+				supplyStatementForm.src = 'http://1.244.192.47:85/ERP-U/Upload/supply_statment/' + cd_company + dt_ship + cd_partner + ".png"
+		});
+	});
+}
+
+function supplyStatementFormGetDataByAjax() {
+	for(var i = 1; i<7; i++) {
+		var bodyObj = supplyStatementGetData();
+		bodyObj.FunctionID = "UP_CG_MOB_PIG_LIST_RPT"+i;
+
+		commonAjaxForGetData(bodyObj, function(data) {
+			supplyStatementForm.data.push(data);
+			supplyStatementForm.functionIdList.push(Object.keys(supplyStatementForm.data[supplyStatementForm.data.length-1])[0]);
+			if(supplyStatementForm.data.length == 6) {
+				supplyStatementFormSetData(supplyStatementForm.data, supplyStatementForm.functionIdList)
+			}
+		});
+	}
+}
+
+function supplyStatementFormEventBine() {
+
+}
+
+function makeNoCompanyFormat(val) {
+	var dtList = [val.substring(0, 3), val.substring(3, 5), val.substring(5, 10)];
+    return dtList[0] + "-" + dtList[1] + "-" + dtList[2];
+}
+
+function findIndex(val) {
+	return supplyStatementForm.functionIdList.indexOf(val);
+}
+/*]]>*/
+</script>
+</div>
+</html>

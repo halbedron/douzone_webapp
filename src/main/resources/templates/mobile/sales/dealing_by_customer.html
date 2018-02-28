@@ -1,0 +1,295 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<div id="loading" style="display: none;">
+			<img id="loading-image"  th:src='@{/images/ajax-loader.gif}'  alt="Loading..."  style="width: 100%; height:20px;  margin-bottom: 30px;"/>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12">
+				<form class="form-horizontal" style="font-size: 11pt;">
+					<div class="form-group" >
+						<label for="shipmentDays" class="col-xs-3 col-sm-2 control-label padTop4 text-muted">출하기간</label>
+						<div class="col-xs-9 col-sm-10">
+							 <div class='input-group date  input-daterange' >
+					            <div class='input-group date' >
+					                <input type='text' class="form-control"  id="dealing_shipping_start"/>
+					            </div>
+						            <span class="input-group-addon">-</span>
+					             <div class='input-group date' >
+					                <input type='text' class="form-control"  id="dealing_shipping_end"/>
+					            </div>
+				            </div>
+			            </div>
+					</div>
+					<div class="form-group">
+						<label for="account" class="col-xs-3 col-sm-2 control-label padTop4  text-muted">거래처</label>
+						<div class="col-xs-9 col-sm-9">
+							<div class='input-group' >
+								<input type="text"  class="form-control" id="farm"/>
+								<span class="input-group-btn">
+									<button type="button"  class="btn btn-default" id="farm_search" data-toggle="modal" data-target="#search_popup"  >
+										<i class="fa fa-search" aria-hidden="true"></i>&nbsp;검색
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group"  style="padding-right: 20px;">
+						<button type="button" class="btn btn-info col-xs-offset-7 col-xs-5 col-sm-offset-4 col-sm-4" id="dealing_search">
+							<i class="fa fa-binoculars" aria-hidden="true"></i>&nbsp;거래 내역 조회
+						</button>
+					</div>
+				</form>
+				<div class="row">
+					<div class="table-responsive">
+						<table id="dealing_grid" class="table table-condensed" data-paging="true" style="font-size: 15px; margin-bottom: 30px;"></table>
+					</div>
+				</div>
+				<div class="row">
+					<div class="btn-group text-center"  role="group" style="padding-left: 10px;">
+						<button type="button"  class="btn btn-default"  id="go_shipping_related" >
+							<i class="fa fa-chevron-left" aria-hidden="true"></i>
+							출하 관련&nbsp;
+						</button>
+						<button type="button"  class="btn btn-default"  id="go_menu" >
+							<i class="fa fa-list" aria-hidden="true"></i>&nbsp;
+							메뉴
+						</button>
+						<button type="button"  class="btn btn-default"  id="go_claim_history" >
+							클레임 내역 조회&nbsp;
+							<i class="fa fa-chevron-right" aria-hidden="true"></i>
+						</button>
+					</div>
+				</div>
+				<div class="modal fade"  id="search_popup">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title">고객 정보 검색</h4>
+				      </div>
+				      <div class="modal-body">
+				        <div th:replace="/mobile/breedingPig/partner_search_popup:: partnerSearch" ></div>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-info" id="modal_confirm">확인</button>
+				        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				  </div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var dealingByCustomer = {
+		grid: null,
+		data: null,
+}
+	
+$(document).ready(function() {
+	dealingByCustomerInit();
+	dealingByCustomerEventBind();
+	partnerInit();
+});
+
+function dealingByCustomerInit() {
+	$("#farm_search").css("height", $("#farm").css("height"));
+	setTitle("거래처별거래내역");
+	dealingByCustomerControles();
+	dealingByCustomerGridInit();
+}
+
+function dealingByCustomerControles() {
+	var today = new Date();
+	var todayStr = today.getFullYear() + "-" + setTwinNum(today.getMonth() + 1) + "-" + setTwinNum(today.getDate());
+	$('#dealing_shipping_start').datetimepicker({
+		useCurrent: false,  
+		format: "YYYY-MM-DD",
+		widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'bottom'
+        }
+	 });
+	
+    $('#dealing_shipping_end').datetimepicker({
+    	format: "YYYY-MM-DD"
+    });
+    
+    $('#dealing_shipping_start').val(todayStr);
+    $('#dealing_shipping_end').val(todayStr);
+    
+	$('#dealing_shipping_start').data("DateTimePicker").maxDate(today);
+    
+    $("#dealing_shipping_start").on("dp.change", function (e) {
+        $('#dealing_shipping_end').data("DateTimePicker").minDate(e.date);
+    });
+    $("#dealing_shipping_end").on("dp.change", function (e) {
+    	if(today > e.date) {
+	    	$('#dealing_shipping_start').data("DateTimePicker").maxDate(e.date);
+    	} else {
+    		$('#dealing_shipping_start').data("DateTimePicker").maxDate(today);
+    	}
+    });
+
+}
+
+function dealingByCustomerSearchForValidation() {
+	if($("#farm").val().trim() == "" ) {
+		bootalert("거래처 입력은 필수 입니다. 검색 후 선택하여 조회해 주십시오.");
+		return false;
+	}
+	
+	if($("#farm").val().trim() != "" && $("#farm").attr("name") == null) {
+		bootalert("[ 거래처 명 : " + $("#farm").val() + " ]로 검색을 원하신다면 농장 검색 후 선택하여 조회해 주십시오.");
+		return false;
+	}
+	
+	return true;
+}
+
+function dealingByCustomerForGetData() {
+	var returnObj = new Object();
+	returnObj.FunctionID = "UP_CG_MOB_SHIP_SALE_P";
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_dt_ship_from = $("#dealing_shipping_start").val().replace(/-/gi, '').trim();
+	returnObj.P_dt_ship_to = $("#dealing_shipping_end").val().replace(/-/gi, '').trim();
+	returnObj.p_cd_partner = $("#farm").attr("name");
+	
+	return returnObj;
+}
+
+function dealingByCustomerSearch(bodyObj) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		dealingByCustomer.data = data.UP_CG_MOB_SHIP_SALE_P;
+		dealingByCustomer.grid.loadRows(dealingByCustomer.data);
+		$("#loading").hide();
+	});
+}
+
+function dealingByCustomerGridInit() {
+	$('#dealing_grid').footable({
+		"empty": "조회된 정보가 없습니다.",
+		"paging": {
+			"size": 5
+		},
+		"columns": [
+			{
+				title: '일자',
+				name: 'DT_SHIP',
+				style:{
+					"width": "100px",
+				},
+				formatter: function(value, options, rowData) {
+					return makeDateFormat(value);
+	            }
+			}, {
+				title: '출고지',
+				name: 'NM_FARM_SUB'
+			}, {
+				title: '품목',
+				name: 'NM_NICK'
+			}, {
+				title: '총두수',
+				name: 'QTY_SALE',
+				formatter: function(value, options, rowData) {
+	                return value + " 두";
+	            }
+			}, {
+				title: '크레임',
+				name: 'QTY_CLAIM',
+				formatter: function(value, options, rowData) {
+	                return value + " 건";
+	            }
+			}, {
+				title: '체중',
+				name: 'WEI_SALE',
+				formatter: function(value, options, rowData) {
+	                return value + " kg";
+	            }
+			}, {
+				title: '금액',
+				name: 'AMT_CALC_SALE_LAST',
+				style:{
+					"width": "100px",
+				},
+				formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '종돈공급내역서',
+				name: 'ID_BIZ_PERSON',
+				style:{
+					"width": "80px",
+					"text-align": "center"
+				},
+	            formatter: function(value, options, rowData) {
+	            	var url = '/report/breeding_pig_supply_statement?CD_PARTNER='+rowData.CD_PARTNER+"&DT_SHIP=" + rowData.DT_SHIP;
+
+	                return '<a href="' + url + '" class="btn btn-sm btn-default">조회</a>';
+	            }
+			}, {
+				name: 'CD_FARM_SUB',
+				"visible": false
+			}, {
+				name: 'CD_PARTNER',
+				"visible": false
+			}
+		],
+		"rows": []
+	});
+	dealingByCustomer.grid = FooTable.get('#dealing_grid');
+}
+
+function dealingByCustomerEventBind() {
+	$("#go_shipping_related").click(function() {
+		location.href = "/sales/shipping_related";
+	});
+	
+	$("#go_menu").click(function() {
+		location.href = "/menu";
+	});
+	
+	$("#go_claim_history").click(function() {
+		var cd_partner = $('input:radio[name="clame_search_select"]:checked').val();
+		if(dealingByCustomer.data == null || cd_partner == undefined) {
+			location.href="/sales/claim_management_account?partner=";
+		} else {
+			location.href="/sales/claim_management_account?partnert=" + cd_partner;
+		}		
+	});
+	
+	$("#search_popup").on('shown.bs.modal', function () {
+		$("#ln_partner").val($("#farm").val());
+	});
+	
+	$("#modal_confirm").click(function() {
+		if($('input:radio[name="selectRadio"]:checked').val() == undefined) {
+			bootalert("선택 할 거래처를 선택해 주세요.");
+			return false
+		} else {
+			if($('input:radio[name="selectRadio"]:checked').val() != undefined) {
+				var index = $('input:radio[name="selectRadio"]:checked').val()*1;
+				var rowData = partner.grid.rows.all[index].value
+				$("#farm").val(rowData.NM_CEO + "[" + rowData.LN_PARTNER + "]");
+				$("#farm").attr("name", "");
+				$("#farm").attr("name", rowData.CD_PARTNER);
+			}
+			$("#search_popup").modal('hide');
+		}
+	});
+	
+	$("#dealing_search").click(function() {
+		if(dealingByCustomerSearchForValidation()) {
+			$("#loading").show();
+			dealingByCustomerSearch(dealingByCustomerForGetData());
+		}
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

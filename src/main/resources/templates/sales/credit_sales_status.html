@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<div th:text="${rowData}"  style="display: none;" id="row_data"></div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12">
+				<form class="form-horizontal" style="font-size: 11pt;">
+					<div class="form-group">
+						<label for="businessField " class="col-xs-3 col-sm-3 control-label padTop4 text-muted"  style="padding-right: 0px;">사업부문</label>
+						<div class="col-xs-9 col-sm-9">
+							<select class="form-control selectpicker"  id="business_part_sel"  >
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="account" class="col-xs-3 col-sm-2 control-label padTop4 text-muted"  >거래처</label>
+						<div class="col-xs-9 col-sm-9">
+							<div class='input-group' >
+								<input type="text"  class="form-control" id="farm"/>
+								<span class="input-group-btn">
+									<button type="button"  class="btn btn-default" id="farm_search" data-toggle="modal" data-target="#search_popup"  >
+										<i class="fa fa-search" aria-hidden="true"></i>&nbsp;검색
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="shipmentDays" class="col-xs-3 col-sm-2 control-label padTop4 text-muted">기간</label>
+						<div class="col-xs-9 col-sm-10">
+							 <div class='input-group date  input-daterange' >
+					            <div class='input-group date' >
+					                <input type='text' class="form-control"  id="credit_shipment_start"/>
+					            </div>
+						            <span class="input-group-addon">-</span>
+					             <div class='input-group date' >
+					                <input type='text' class="form-control"  id="credit_shipment_end"/>
+					            </div>
+				            </div>
+			            </div>
+					</div>
+					<div class="form-group" style="padding-right: 20px;">
+						<button type="button" class="btn btn-info col-xs-offset-6 col-xs-6 col-sm-offset-4 col-sm-4" id="credit_search">
+							<i class="fa fa-binoculars" aria-hidden="true"></i>&nbsp;매출 채권 조회
+						</button>
+					</div>
+				</form>
+				<div class="row">
+					<div class="table-responsive">
+						<table id="credit_sales_status_grid" class="table table-condensed"   data-sorting="true"  data-paging="true" style="font-size: 15px; margin-bottom: 30px;"></table>
+					</div>
+				</div>
+				<div class="row">
+					<div class="btn-group text-center"  role="group" style="padding-left: 10px;">
+						<button type="button"  class="btn btn-default"  id="go_claim_history" >
+							<i class="fa fa-chevron-left" aria-hidden="true"></i>
+							&nbsp;클레임 내역 조회
+						</button>
+						<button type="button"  class="btn btn-default"  id="go_menu" >
+							<i class="fa fa-list" aria-hidden="true"></i>&nbsp;
+							메뉴
+						</button>
+						<button type="button"  class="btn btn-default"  id="go_account_receivable" >
+							미수현황&nbsp;
+							<i class="fa fa-chevron-right" aria-hidden="true"></i>
+						</button>
+					</div>
+				</div>
+				<div class="modal fade"  id="search_popup">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title">고객 정보 검색</h4>
+				      </div>
+				      <div class="modal-body">
+				        <div th:replace="/mobile/breedingPig/partner_search_popup:: partnerSearch" ></div>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-info" id="modal_confirm">확인</button>
+				        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				  </div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var creditSalesStatus = {
+		rowData: null,
+		grid: null,
+		data: null,
+}
+	
+$(document).ready(function() {
+	creditSalesStatusInit();
+});
+
+function creditSalesStatusInit() {
+	$("#farm_search").css("height", $("#farm").css("height"));
+	setTitle("매출채권명세");
+	creditSalesStatus.rowData = JSON.parse($("#row_data").text()).paramJson;
+	creditSalesStatusSelectInit();
+	creditSalesStatusControles();
+	creditSalesStatusGridInit();
+	partnerInit();
+	creditSalesStatusEventBind();
+	setTimeout(function(){ 
+		creditSalesStatusInitSetData();
+	}, 100);
+}
+
+function creditSalesStatusSelectInit() {
+	commonSelectInit('CG_BA_0001', '#business_part_sel', '0', '선택');
+}
+
+function creditSalesStatusControles() {
+	var today = new Date();
+	var todayStr = today.getFullYear() + "-" + setTwinNum(today.getMonth() + 1) + "-" + setTwinNum(today.getDate());
+	$('#credit_shipment_start').datetimepicker({
+		useCurrent: false,  
+		format: "YYYY-MM-DD",
+		widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'bottom'
+        }
+	 });
+	
+    $('#credit_shipment_end').datetimepicker({
+    	format: "YYYY-MM-DD"
+    });
+    
+    $('#credit_shipment_start').val(todayStr);
+    $('#credit_shipment_end').val(todayStr);
+    
+	$('#credit_shipment_start').data("DateTimePicker").maxDate(today);
+    
+    $("#credit_shipment_start").on("dp.change", function (e) {
+        $('#credit_shipment_end').data("DateTimePicker").minDate(e.date);
+    });
+    $("#credit_shipment_end").on("dp.change", function (e) {
+    	if(today > e.date) {
+	    	$('#credit_shipment_start').data("DateTimePicker").maxDate(e.date);
+    	} else {
+    		$('#credit_shipment_start').data("DateTimePicker").maxDate(today);
+    	}
+    });
+
+}
+
+function creditSalesStatusInitSetData() {
+	if(creditSalesStatus.rowData != null && creditSalesStatus.rowData != "") {
+		$("#business_part_sel").val(creditSalesStatus.rowData.CODE_BIZ_FIELD);
+		$("#business_part_sel").selectpicker('refresh');
+		
+		$('#credit_shipment_start').val(creditSalesStatus.rowData.DT_FROM);
+		$('#credit_shipment_end').val(creditSalesStatus.rowData.DT_TO);
+		
+		$('#farm').val(creditSalesStatus.rowData.SN_PARTNER);
+		$('#farm').attr("name", creditSalesStatus.rowData.CD_PARTNER);
+		
+		creditSalesStatusSearch(creditSalesStatusForGetData());
+	}
+}
+
+function creditSalesStatusSearchForValidation() {
+	if($("#business_part_sel").val() == "0" || $("#business_part_sel").val() == null) {
+		bootalert("사업부문 선택은 필수 입니다.");
+		return false;
+	}
+	
+	if($("#farm").val().trim() == "" ) {
+		bootalert("거래처 입력은 필수 입니다. 검색 후 선택하여 조회해 주십시오.");
+		return false;
+	}
+	
+	if($("#farm").val().trim() != "" && $("#farm").attr("name") == null) {
+		bootalert("[ 거래처 명 : " + $("#farm").val() + " ]로 검색을 원하신다면 농장 검색 후 선택하여 조회해 주십시오.");
+		return false;
+	}
+	
+	return true;
+}
+
+function creditSalesStatusForGetData() {
+	var returnObj = new Object();
+	returnObj.FunctionID = "UP_CG_MOB_RECEIVALE_S";
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_BIZ_FIELD = $("#business_part_sel").val();
+	returnObj.P_CD_PARTNER = $("#farm").attr("name");
+	returnObj.P_DT_FROM = $("#credit_shipment_start").val().replace(/-/gi, '').trim();
+	returnObj.P_DT_TO = $("#credit_shipment_end").val().replace(/-/gi, '').trim();
+	
+	return returnObj;
+}
+
+function creditSalesStatusSearch(bodyObj) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		creditSalesStatus.data = data.UP_CG_MOB_RECEIVALE_S;
+		creditSalesStatus.grid.loadRows(creditSalesStatus.data);
+	});
+}
+
+function creditSalesStatusGridInit() {
+	
+	$('#credit_sales_status_grid').footable({
+		"empty": "조회된 정보가 없습니다.",
+		"paging": {
+			"size": 5
+		},
+		"columns": [
+			{
+				title: '일자',
+				name: 'DT_OUT',
+				style:{
+					"text-align": "center"
+				},
+// 				formatter: function(value, options, rowData) {
+// 					return makeDateFormat(value);
+// 	            },
+// 				"sorted": true,
+			},{
+				title: '품목',
+				name: 'NM_ITEM',
+				style:{
+					"text-align": "center"
+				}
+			}, {
+				title: '전월이월',
+				name: 'AM_PREV',
+				style:{
+					"text-align": "right"
+				},
+				formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '수량1',
+				name: 'QTY_OUT',
+				style:{
+					"text-align": "right"
+				}
+			}, {
+				title: '수량2',
+				name: 'QTY_OUT_ETC',
+				style:{
+					"text-align": "right"
+				}
+			}, {
+				title: '교환',
+				name: 'QTY_OUT_EXCHANGE',
+				style:{
+					"text-align": "right"
+				}
+			}, {
+				title: '매출',
+				name: 'AMT_OUT',
+				style:{
+					"text-align": "right"
+				},
+				formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '입금',
+				name: 'AMT_CREDIT',
+				style:{
+					"text-align": "right"
+				},
+				formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '잔고',
+				name: 'AMT_JAN',
+				style:{
+					"text-align": "right"
+				},
+				formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}
+		],
+		"rows": []
+	});
+	creditSalesStatus.grid = FooTable.get('#credit_sales_status_grid');
+}
+
+function creditSalesStatusEventBind() {
+	$("#go_claim_history").click(function() {
+		location.href = "/sales/claim_management_account";
+	});
+	
+	$("#go_menu").click(function() {
+		location.href = "/menu";
+	});
+	
+	$("#go_account_receivable").click(function() {
+		location.href = "/sales/accounts_receivable_status";
+	});
+	
+	$("#search_popup").on('shown.bs.modal', function () {
+		$("#ln_partner").val($("#farm").val());
+	});
+	
+	$("#modal_confirm").click(function() {
+		if($('input:radio[name="selectRadio"]:checked').val() == undefined) {
+			bootalert("선택 할 거래처를 선택해 주세요.");
+			return false
+		} else {
+			if($('input:radio[name="selectRadio"]:checked').val() != undefined) {
+				var index = $('input:radio[name="selectRadio"]:checked').val()*1;
+				var rowData = partner.grid.rows.all[index].value
+				$("#farm").val(rowData.NM_CEO + "[" + rowData.LN_PARTNER + "]");
+				$("#farm").attr("name", "");
+				$("#farm").attr("name", rowData.CD_PARTNER);
+			}
+			$("#search_popup").modal('hide');
+		}
+	});
+	
+	$("#credit_search").click(function() {
+		if(creditSalesStatusSearchForValidation()) {
+			creditSalesStatusSearch(creditSalesStatusForGetData());
+		}
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

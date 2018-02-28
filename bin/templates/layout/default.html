@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"  lang="ko">
+<head th:replace="/fragment/config :: configFragment"></head>
+ <body>
+ <!-- #push_sidebar -->
+<div id="push_sidebar" style="display: none; overflow-x: hidden; overflow-y: auto; height: -webkit-fill-available;">
+	<div class="row"  id="settingTag">
+		<div class="row">
+			<div class="col-xs-offset-6 col-xs-1">
+				<a href="/menu"><i class="fa fa-home fa-2x fa-inverse"  aria-hidden="true" ></i></a>
+			</div>
+			<div class="col-xs-offset-2 col-xs-1">
+				<a href="#"><i class="fa fa-power-off fa-2x fa-inverse" aria-hidden="true" id="power_off"></i></a>
+			</div>
+		</div>
+		<div class="row ">
+			<div class="col-xs-4">
+				<i class="fa fa-user-circle-o fa-3x" aria-hidden="true"></i>
+			</div>
+			<div class="col-xs-7">
+				<h2 id="sessionName"></h2>
+			</div>
+		</div>
+	</div>
+	<ul class="list-unstyled">
+		<li id="li_shipping">
+			<a class="side_nav_li" data-toggle="collapse" data-target="#side_breedingPig_shipping" >
+				<i class="fa fa-truck" aria-hidden="true"></i>종돈 출하
+			</a>
+			<div class="collapse" id="side_breedingPig_shipping">
+		      <ul class="nav">
+		        <li><a href="/breedingPig/shipping_plan" > - 출하계획</a></li>
+		        <li id="li_eartag"><a  href="/breedingPig/earTagged_check" > - 이각확인</a></li> 
+		      </ul>
+		    </div>
+		</li>
+		<li id="li_sales">
+			<a class="side_nav_li" data-toggle="collapse" data-target="#side_salesManagement" >
+				<i class="fa fa-briefcase" aria-hidden="true"></i>영업관리
+			</a>
+			<div class="collapse" id="side_salesManagement">
+		      <ul class="nav"  id="side_ul_sales">
+		        <li id="side_li_partner"><a href="/sales/partner"> - 고객정보</a></li>
+		        <li><a href="/sales/shipping_related"> - 출하관련</a></li> 
+		        <li><a href="/sales/dealing_by_customer"> - 거래처별거래내역</a></li> 
+		        <li><a href="/sales/claim_management"> - 클레임관리</a></li> 
+		        <li><a href="/sales/credit_sales_status"> - 외상채권현황</a></li> 
+		        <li><a href="/sales/accounts_receivable_status"> - 미수현황</a></li> 
+		        <li><a href="/sales/collection_status"> - 수금현황</a></li> 
+		        <li><a href="/sales/pig_farm_price_information"> - 돈가시세정보</a></li> 
+		      </ul>
+		    </div>
+		</li>
+		<li id="li_report">
+			<a class="side_nav_li" data-toggle="collapse" data-target="#side_report" >
+				<i class="fa fa-file-text" aria-hidden="true"></i>보고서
+			</a>
+			<div class="collapse" id="side_report">
+		      <ul class="nav">
+		        <li><a href="/report/flat_rate_account"> - 청구서(정액)</a></li> 
+		        <li><a href="/report/performance_to_plan"> - 계획대비실적</a></li> 
+		      </ul>
+		    </div>
+		</li>
+	</ul>
+</div>
+<!-- /#push_sidebar -->
+<div id="wrapper"  style="overflow-y: auto;">
+	<!-- .container-fluid -->
+	<header>
+		<div class="container-fluid" style=" " id="head_title">
+			<span style="font-size: 30px;" id="darby_title">DARBY</span>
+			<span class="nav_trigger"><i class="fa fa-navicon"></i></span>
+		</div>
+	</header>
+	<!-- .container-fluid -->
+	<div layout:fragment="content"  style="height: -webkit-fill-available; overflow: auto;" ></div>
+ </div>
+ <style>
+ 	$("#push_sidebar").active {
+ 		opacity: 1;
+    	display: block;
+ 	}
+ </style>
+ <script>
+ /*<![CDATA[*/
+$(".nav_trigger").click(function() {
+	$("body").toggleClass("show_sidebar");
+	$(".nav_trigger .fa").toggleClass("fa-navicon fa-times"); 
+	if(this.children[0].className == "fa fa-times") {
+		if(screen.width < 500) {
+			$(this).css("float", "left");
+		} else {
+			$($(this).parent()[0].children[0]).css("float", "left");
+			$(this).css("float", "left").css("margin-left", "23%");
+		}
+			$("#push_sidebar").show(100);
+			$("#side_shippingManage").removeClass("in");
+	} else {
+		$(this).css("float", "right");
+		$("#push_sidebar").css("display", "none");
+	}
+});
+ 
+ if(sessionStorage.getItem("userInfo") == null) {
+	 $("#sessionName").html("<a href='/home' id='login'>로그인</a>");
+ } else {
+	 $("#sessionName").text(userInfo().ID_USER);
+	 if(sessionStorage.getItem("groupFlag") == "1") {
+		 $("#li_eartag, #li_report").hide();
+		 $("#side_ul_sales li").hide();
+		 $("#side_li_partner").show();
+	 }
+ }
+
+	 
+ function defaultEventBind() {
+	 $(".side_nav_li").click(function() {
+		 var nav_list = ["#side_breedingPig_shipping", "#side_salesManagement", "#side_report"];
+		 var target = $(this).attr("data-target");
+			var index = nav_list.indexOf(target);
+
+			nav_list.splice(index, 1);
+			for(var i in nav_list) {
+				$(nav_list[i]).removeClass("in");
+			}
+	 });
+	 
+	 $("#power_off").click(function() {
+		sessionStorage.clear();
+		location.href="/home"
+	 });
+ }
+ 
+ defaultEventBind();
+ 
+/*]]>*/
+</script>
+<script type="text/javascript">
+ /*<![CDATA[*/
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-36251023-1']);
+	_gaq.push(['_setDomainName', 'jqueryscript.net']);
+	_gaq.push(['_trackPageview']);
+	
+	(function() {
+		  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+  /*]]>*/
+</script>
+ 
+</body> 
+</html>

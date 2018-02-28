@@ -1,0 +1,277 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 20%;">
+		<div th:text="${jsonObj}" style="display: none;" id="row_data"></div>
+		<div class="row" >
+			<div class="col-xs-12 col-sm-12">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label for="shippingDate" class="col-xs-4 col-sm-2 control-label text-muted">출하일자</label>
+						<div class="col-xs-7 col-sm-9">
+							<input type="text"  class="form-control"  id="shippingDate"  readonly="readonly"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="shippingItem" class="col-xs-4 col-sm-2  control-label text-muted">품목</label>
+						<div class="col-xs-7 col-sm-9">
+							<input type="text"  class="form-control"  id="shippingItem"  readonly="readonly"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="numberOfHeads" class="col-xs-4 col-sm-2  control-label text-muted">두수</label>
+						<div class="col-xs-7 col-sm-9">
+							<input type="number"  class="form-control"  id="numberOfHeads"  readonly="readonly" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="weight" class="col-xs-4 col-sm-2 control-label text-muted">체중</label>
+						<div class="col-xs-6 col-sm-8">
+							<input type="number"  class="form-control" id="weight"  readonly="readonly" />
+						</div>
+						<label class="padTop4 text-muted">kg</label>
+					</div>
+					<div class="row">
+						<label for="sign" class="col-xs-4 col-sm-2  control-label text-muted">서명</label>
+					</div>
+					<div class="form-group" style="padding-right: 30px;" >
+						<div id="signature-pad"  class="col-xs-12"  style="border: 1px solid grey; margin-left: 10px">
+						 	<canvas style="width: 340px; height: 200px" id="canvas_sign" ></canvas>
+						 </div>
+						 <div id="sign_img_div" class="text-center">
+							 <label id="no_img_label" class="text-muted"></label>
+							 <img id="sign_Img" style="width: 100%; border: 1px solid grey; margin-left: 20px;"/>
+						 </div>
+					</div>
+				</form>
+				<div class="col-xs-12 col-xs-offset-1 btn-group"  role="group"  style="padding: 0 0 20px 0;">
+					<button type="button" class="button btn btn-default"  id="regist_pre_view" style="width: 19%">
+						<i class="fa fa-chevron-left" aria-hidden="true"></i>&nbsp;이전
+					</button>
+					<button type="button" class="button clear btn btn-default" data-action="clear"  style="width: 24%">
+						<i class="fa fa-refresh" aria-hidden="true"></i>&nbsp;지우기
+					</button>
+         			<button type="button" class="button save btn btn-info" data-action="save"  style="width: 19%">
+         				<i class="fa fa-floppy-o" aria-hidden="true"></i>&nbsp;저장
+         			</button>
+         			<button type="button" class="button output btn btn-info"  data-action="output"  style="width: 19%">
+         				<i class="fa fa-print" aria-hidden="true"></i>&nbsp;출력
+         			</button>
+<!--          			<button type="button" class="button sms btn btn-default" data-action=""  style="width: 19%"> -->
+<!--          				<i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp;문자 -->
+<!--          			</button> -->
+				</div>
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var signRegist = {
+		rowData: null,
+}
+$(document).ready(function() {
+	signRegistInitialize();
+});
+
+function signRegistInitialize() {
+	setTitle("서명 등록");
+	canvasSignInitialize();
+	signRegistSetData();
+	signRegistEventBind();
+}
+
+function  signRegistSetData() {
+	if($("#row_data").text() != "{}") {
+		signRegist.rowData = JSON.parse($("#row_data").text()).paramJson;
+		signRegist.rowData.IMG_SIGN_FILE = signRegist.rowData.IMG_SIGN_FILE.replace("jpg", "png");
+		
+		var shippingDate = signRegist.rowData.DT_SHIP_PLAN.substring(0,4)+"-"+signRegist.rowData.DT_SHIP_PLAN.substring(4,6)+"-"+signRegist.rowData.DT_SHIP_PLAN.substring(6,8);
+	    $("#shippingDate").val(shippingDate);
+	    $("#shippingItem").val(signRegist.rowData.NM_NICK);
+	    $("#numberOfHeads").val(signRegist.rowData.QTY_SALE);
+	    $("#weight").val(signRegist.rowData.WEI_SALE);
+	    if(signRegist.rowData.YN_SIGN == 'Y') {
+	    	$("#signature-pad").hide();
+	    	$("#sign_img_div").show();
+	    	$("button[data-action='save']").hide();
+	    	var files = new Image;
+	    	files.onload = function() {
+				$("#sign_Img").attr('src', files.src);
+	    	}
+	    	
+	    	files.onerror = function() {
+	    		$("#no_img_label").text("이미지가 없습니다.");
+	    	}
+	    	files.src = 'http://1.244.192.47:85/ERP-U/Upload/ship_sign/' + signRegist.rowData.IMG_SIGN_FILE;
+	    	
+	    } else {
+	    	$("#sign_img_div").hide();
+	    }
+	}
+}
+
+function canvasSignInitialize() {
+	var canvas = $("#signature-pad canvas")[0];
+	var sign = new SignaturePad(canvas, {
+		minWidth : 2,
+		maxWidth : 2,
+		penColor : "rgb(00, 00, 00)"
+	});
+	$("[data-action]").on("click", function() {
+		if ($(this).data("action") == "clear") {
+			if(signRegist.rowData.YN_SIGN == "N") {
+				sign.clear();
+			} else {
+		    	$("#sign_img_div").hide();
+				$("#signature-pad").show();
+				$("button[data-action='save']").show();
+			}
+		} else if ($(this).data("action") == "output") {
+			if (sign.isEmpty() && $("#signature-pad").css("display") != "none") {
+				BootstrapDialog.alert( '사인란에 사인이 비어있습니다.');
+			} else {
+				
+				if(signRegist.rowData.YN_SIGN == "N") {
+					BootstrapDialog.alert( '사인저장 후 출력 가능합니다.');
+					return false;
+				} else {
+					if(sign.isEmpty()) {
+						signRegist.rowData.signImg = $("#sign_Img").attr('src');
+					} else {
+						signRegist.rowData.signImg = sign.toDataURL();
+					}
+					goOutputConfirmaionForm();
+				}
+			}
+		} else if ($(this).data("action") == "save") {
+			if (sign.isEmpty() && $("#signature-pad").css("display") != "none") {
+				BootstrapDialog.alert( '사인란에 사인이 비어있습니다.');
+			} else {
+				if(sign.isEmpty()) {
+					signRegist.rowData.signImg = $("#sign_Img").attr('src');
+				} else {
+					signRegist.rowData.signImg = sign.toDataURL();
+				}
+				uploadCanvas();
+				var bodyObj = signRegistGetDataForSave();
+				signRegistCallRestApi(bodyObj);
+			}
+		}
+	});
+	
+	resizeCanvas();
+}
+
+function resizeCanvas() {
+	var canvas = $("#signature-pad canvas")[0];
+
+	var ratio = Math.max(window.devicePixelRatio || 1, 1);
+	canvas.width = canvas.offsetWidth * ratio;
+	canvas.height = canvas.offsetHeight * ratio;
+	canvas.getContext("2d").scale(ratio, ratio);
+}
+
+$(window).on("resize", function() {
+	resizeCanvas();
+});
+
+function signRegistGetDataForSave() {
+	var returnObj = new Object();
+	returnObj.FunctionID = "UP_CG_MOB_SHIP_SIGN_I";
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_NO_SHIP_PLAN = signRegist.rowData.NO_SHIP_PLAN;
+	returnObj.P_CD_PARTNER = signRegist.rowData.CD_PARTNER;
+	returnObj.P_ID_BIZ_PERSON = signRegist.rowData.ID_BIZ_PERSON;
+// 	returnObj.p_id_update = userInfo().ID_USER;
+	return returnObj;
+}
+
+function signRegistCallRestApi(bodyObj) {
+	$.get( "/api/getRest?restUrl=" + getUrl("RequestTx2") + "&header=" + encodedJSON(headerInfo()) + "&body=" + encodedJSON(bodyObj), function( data ) {
+		if(JSON.parse(data).resultCode == "2000") {
+			logOutAlert(JSON.parse(data).resultMessage);
+		} else if(JSON.parse(data).resultCode != "1000" && JSON.parse(data).resultCode != "2000") {
+			bootalert("데이터가 저장되지 않았습니다. 다시 시도부탁드립니다. \n"+JSON.parse(data).resultMessage);
+			return false
+		}
+	}).done(function(data){
+		if(JSON.parse(data).resultCode == "1000") {
+			BootstrapDialog.show({
+				 message: "저장되었습니다.",
+				 buttons: [{
+					 label: '출력화면으로 이동',
+					 action: function() {
+						signRegist.rowData.IMG_SIGN_FILE = userInfo().CD_COMPANY + signRegist.rowData.NO_SHIP_PLAN + signRegist.rowData.CD_PARTNER + ".png";
+						signRegist.rowData.signImg = "http://1.244.192.47:85/ERP-U/Upload/ship_sign/" + signRegist.rowData.IMG_SIGN_FILE;
+						goOutputConfirmaionForm();
+				 	}
+				 }, {
+					 label: '출하계획 화면으로 이동',
+					 action: function() {
+						 var shippingDate = signRegist.rowData.DT_SHIP_PLAN.substring(0,4)+"-"+signRegist.rowData.DT_SHIP_PLAN.substring(4,6)+"-"+signRegist.rowData.DT_SHIP_PLAN.substring(6,8);
+						 location.href = "/breedingPig/shipping_plan?date=" + shippingDate;
+					 }
+				 }]
+			 });
+		} 
+	}).fail(function(err) {
+		bootalert("데이터가 저장되지 않았습니다. 다시 시도부탁드립니다. \n"+JSON.parse(data).resultMessage);
+		return false
+		console.log(err)
+	});
+}
+
+function uploadCanvas() {
+	var canvas = document.getElementById("canvas_sign");
+	var cavImgStr = canvas.toDataURL('image/png', 1.0);
+	
+	$.post('/canv/canvasUploadProc'
+		, {strImg : cavImgStr, cd_company: userInfo().CD_COMPANY, no_ship_plan: signRegist.rowData.NO_SHIP_PLAN, cd_partner: signRegist.rowData.CD_PARTNER}
+		, function(data) {
+			console.log(data);
+	});
+}
+
+function goOutputConfirmaionForm() {
+	var jsonObj = new Object();
+	jsonObj.no_ship_plan = signRegist.rowData.NO_SHIP_PLAN;
+	jsonObj.cd_partner = signRegist.rowData.CD_PARTNER;
+	jsonObj.img_sign_file = signRegist.rowData.IMG_SIGN_FILE;
+	sessionStorage.setItem("sign", signRegist.rowData.signImg);
+	location.href = "/breedingPig/pig_confirmation_form?data=" +encodedJSON(jsonObj);
+}
+
+function signRegistEventBind() {
+	$("#regist_pre_view").click(function() {
+		var referrer =  document.referrer;
+		if(referrer == "http://1.244.192.47:8080/breedingPig/shipping_plan") {
+			var shippingDate = signRegist.rowData.DT_SHIP_PLAN.substring(0,4)+"-"+signRegist.rowData.DT_SHIP_PLAN.substring(4,6)+"-"+signRegist.rowData.DT_SHIP_PLAN.substring(6,8);
+			 location.href = "/breedingPig/shipping_plan?date=" + shippingDate;
+		} else {
+			history.back();
+		}
+	});
+}
+
+function converImgToDataUrl(src) {
+	var img = new Image();
+	img.crossOrigin = "anonymous";
+	img.setAttribute('crossOrigin', 'anonymous');
+	img.src = src;
+	var url = "";
+	img.onload = function () {
+		var canvas = document.createElement('canvas'), context = canvas.getContext('2d');
+		canvas.width = img.width;
+		canvas.height = img.height;
+		context.drawImage(img, 0, 0, img.width, img.height);
+
+		url = canvas.toDataURL('image/png');
+	};
+	
+	return url;
+}
+/*]]>*/
+</script>
+</div>
+</html>

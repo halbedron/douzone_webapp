@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<div th:text="${CD_PARTNER}"  style="display: none;" id="cd_partner"></div>
+		<div th:text="${DT_SHIP}"  style="display: none;" id="dt_ship"></div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12">
+				<div id="supplyStatementCanvas" >
+					<div th:replace="/mobile/report/supply_statement_form :: supplyStatement" ></div>
+				</div>
+				<div class="modal fade"  id="supplyOutput">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" >종돈공급내역서</h4>
+				      </div>
+				      <div class="modal-body">
+				        <img id="supply_Img"  style="width: 100%"/>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-info" data-dismiss="modal">닫기</button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				  </div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</div>
+		</div>
+		<div class="row form-group">
+			<div class="col-xs-12 col-sm-12">
+				<button type="button" class="btn btn-info"  data-toggle="modal" data-target="#supplyOutput" id="output_img">이미지 저장</button>
+			</div>
+		</div>
+	</div>
+<style>
+#supplyStatementCanvas {
+	padding: 10px; 
+	border: 1px solid #d3d3d3; 
+	width: max-content; 
+	font-size: 13pt; 
+	margin-bottom: 20px;
+}
+</style>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var supplyStatement = {
+		rowData: null,
+}
+
+$(document).ready(function() {
+	supplyStatementInit();
+});
+
+function supplyStatementInit() {
+	setTitle("종돈공급내역서");
+	supplyStatementFormInit();
+	supplyStatementFormGetDataByAjax(supplyStatementGetData())
+	supplyStatementEventBind();
+}
+
+function supplyStatementGetData() {
+	
+	var returnObj = new Object();
+// 	returnObj.FunctionID = functionID;
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_DT_SHIP = $("#dt_ship").text();
+	returnObj.P_CD_PARTNER = $("#cd_partner").text();
+
+	return returnObj;
+}
+
+function supplyStatementEventBind() {
+	
+	$("#output_img").click(function() {
+		$("#supply_Img").attr('src', supplyStatementForm.src);
+	});
+	
+}
+/*]]>*/
+</script>
+</div>
+</html>

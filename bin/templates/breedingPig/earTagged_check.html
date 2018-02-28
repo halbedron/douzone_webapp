@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label for="farm" class="col-xs-5 col-sm-3 control-label padTop4" style="padding-right: 0px;">출고지(농장)</label>
+						<div class="col-xs-7 col-sm-8">
+							<div class='input-group' >
+								<input type="text"  class="form-control"  id="farm"  />
+								<span class="input-group-btn">
+									<button type="button"  class="btn btn-default btn-sm" id="farm_search" data-toggle="modal" data-target="#search_popup"  >
+										<i class="fa fa-search" aria-hidden="true"></i>  검색
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="referenceDate" class="col-xs-4 col-sm-2 control-label padTop4">기준일자</label>
+						<div class="col-xs-8 col-sm-9">
+							<input type="text"  class="form-control"  id="referenceDate"  />
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="referenceMonth" class="col-xs-5 col-sm-8 control-label padTop4">기준개월수</label>
+						<div class="col-xs-6 col-sm-8">
+							<div class='input-group'   style="z-index: 1;">
+				                <input type="number" class="form-control"  id="reference_start" value="130"/>
+					            <span class="input-group-addon">-</span>
+				                <input type='number' class="form-control"  id="reference_end" value="200"/>
+				            </div>
+			            </div>
+		                <label class="padTop4"> 일</label>
+					</div>
+					<div class="form-group">
+						<label for="earTagNum" class="col-xs-4 col-sm-2 control-label padTop4">이각번호</label>
+						<div class="col-xs-8 col-sm-9">
+							<div class='input-group' >
+								<input type="text"  class="form-control"  id="earTagNum"  />
+								<span class="input-group-btn">
+									<button type="button"  class="btn btn-info btn-sm" id="ear_tag_search">
+										<i class="fa fa-binoculars" aria-hidden="true"></i>  조회
+									</button>
+								</span>
+							</div>
+						</div>
+						<div class="col-xs-6 col-sm-7">
+						</div>
+					</div>
+				</form>
+				<div class="row">
+					<form id="data-form">
+						<table id="ear_tag_grid" class="table table-condensed" data-paging="true" style="font-size: 15px; margin-bottom: 30px;"></table>
+					</form>
+				</div>
+				<div class="modal fade"  id="search_popup">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title">고객 정보 검색</h4>
+				      </div>
+				      <div class="modal-body">
+				        <div th:replace="/mobile/breedingPig/partner_search_popup:: partnerSearch" ></div>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-info" id="modal_confirm">확인</button>
+				        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				  </div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var earTagged = {
+		grid: null,
+		searchFarmNm: null,
+		data: null,
+}
+
+$(document).ready(function() {
+	earTaggedCheckInitialize();
+});
+
+function earTaggedCheckInitialize() {
+	setTitle("이각 확인");
+	inputFixHeight();
+	referenceDatePickerInitialize();
+	earTagGridInitalize();
+	earTaggedEventbind();
+	partnerInit();
+}
+
+/**
+ * 화면마다 높이가 달라서 높이를 하나로 맞춥니다.
+ */
+function inputFixHeight() {
+	var buttonList = [$("button")[0], $("button")[1]];
+	for(var i in buttonList) {
+		if(i != "buttonList" && i.length == 1) {
+			var inputHeght =$($($($("button")[0]).parent().parent()[0]).children()[0]).css("height");
+			$(buttonList[i]).css("height", inputHeght);
+		}
+	}
+}
+
+/**
+ * Date Controls 초기화
+ */
+function referenceDatePickerInitialize() {
+	$("#referenceDate").datetimepicker({
+		useCurrent: true, 
+		format: "YYYY-MM-DD"
+	 });
+	
+	var today = new Date();
+	todayStr = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + today.getDate();
+	$("#referenceDate").val(todayStr);
+}
+
+/**
+ * 필수 조건 확인
+ */
+function earTaggedValidation() {
+	if($("#farm").val() == null || $("#farm").val() == "") {
+		bootalert("농장명은 필수 입력입니다.");
+		return false;
+	}
+	
+	if($("#farm").attr("name") == null || $("#farm").attr("name") == "undefined") {
+		bootalert("출고지 검색 후 해당 농장 선택 후 조회 하여 주십시오.");
+		return false;
+	}
+	
+	if($("#referenceDate").val() == null || $("#referenceDate").val() == "") {
+		bootalert("기준일자는 필수 입력입니다.");
+		return false;
+	}
+	
+	return true;
+}
+
+/**
+ * Ajax 보내기 위한 body data 수집
+ * FunctionID = 프로시저 명
+ */
+function earTaggedForGetData() {
+	var returnObj = new Object();
+	returnObj.FunctionID = "UP_CG_MOB_EAR_NO";
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_CD_FARM = $("#farm").attr("name").trim();
+	returnObj.P_DT_BASE = $("#referenceDate").val().replace( /-/gi, '').trim();
+	returnObj.P_DAY_OUT_FR = $("#reference_start").val().trim();
+	returnObj.P_DAY_OUT_TO = $("#reference_end").val().trim();
+	returnObj.P_CD_EAR = $("#earTagNum").val().trim();
+	
+	return returnObj;
+}
+
+function AjaxForearTaggedSearch(bodyObj) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		earTagged.data = data.UP_CG_MOB_EAR_NO;
+		earTagged.grid.loadRows(earTagged.data);
+		$(".pagination").css("width", "max-content");
+	});
+}
+
+/**
+ * 그리드 초기화
+ */
+function earTagGridInitalize() {
+	$('#ear_tag_grid').footable({
+		"empty": "조회된 정보가 없습니다.",
+		"paging": {
+			"size": 5
+		},
+		"columns": [
+			{
+				title: '이각번호',
+				name: 'CD_EAR',
+				style:{
+					"text-align" : "center",
+				}
+			}, {
+				title: '생년월일',
+				name: 'DT_BIRTH',
+				style:{
+					"text-align" : "center",
+				},
+				formatter: function(value, options, rowData) {
+					 return makeDateFormat(value);
+	            }
+			}, {
+				title: '일령',
+				name: 'DAY_OUT',
+				style:{
+					"text-align" : "center",
+				}
+			}
+		],
+		"rows": []
+	});
+	earTagged.grid = FooTable.get('#ear_tag_grid');
+	
+}
+
+/**
+ * 이벤트(click, change 등)
+ */
+function earTaggedEventbind() {
+	$("#search_popup").on('shown.bs.modal', function () {
+		$("#ln_partner").val($("#farm").val());
+	});
+	
+	$("#modal_confirm").click(function() {
+		if($('input:radio[name="selectRadio"]:checked').val() == undefined) {
+			bootalert("선택 할 거래처를 선택해 주세요.");
+			return false
+		} else {
+			if($('input:radio[name="selectRadio"]:checked').val() != undefined) {
+				var index = $('input:radio[name="selectRadio"]:checked').val()*1;
+				var rowData = partner.grid.rows.all[index].value
+				$("#farm").val(rowData.NM_CEO + "[" + rowData.LN_PARTNER + "]");
+				$("#farm").attr("name", "");
+				$("#farm").attr("name", rowData.CD_PARTNER);
+			} 
+			$("#search_popup").modal('hide');
+		}
+	});
+	
+	/**
+	 * 조회 버튼 클릭시 AJAX function 호출
+	 */
+	$("#ear_tag_search").click(function() {
+		// Validation function 에서 true 가 리턴되면 데이터를 모아서 ajax를 호출한다.
+		if(earTaggedValidation()) {
+			AjaxForearTaggedSearch(earTaggedForGetData())
+		}
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

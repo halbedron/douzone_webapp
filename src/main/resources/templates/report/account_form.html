@@ -1,0 +1,624 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  th:fragment="accountForm">
+	<div class="container-fluid" style="padding-top: 10px;">
+		<div class="row">
+			<div class="col-xs-6">
+				<p>고능력웅돈, 신뢰받는 품질</p>
+				<h1><b>(주)다비육종</b></h1>
+			</div>
+			<div class="col-xs-6 text-right">
+				<p>지역담당 </p><p id="ID_BIZ_PERSON" ></p>
+				<p>Tel. <span id="PERSON_TEL" ></span></p>
+			</div>
+		</div>
+		<div class="row">
+			<p id="ADDR" ></p>
+		</div>
+		<div class="row text-right"><p><b id="ADDR1" ></b></p></div>
+		<div class="row">
+			<p>Tel. <span id="NO_TEL" ></span></p>
+		</div>
+		<div class="row text-right">
+			<p><b id="LN_PARTNER"></b></p>
+			<p><span id="NM_CEO" ></span> 귀하</p>
+			<p id="NO_POST1" ></p>
+		</div>
+		<div class="row">
+			<p><small>* 본 정산서는 <span id="DT_END_STR" ></span> 기준으로 작성된 것입니다.</small></p>
+		</div>
+		<div class="row">
+			<table style="border-top: 3px solid #333; border-bottom: 2px solid #333; width: -webkit-fill-available;">
+				<tbody>
+					<tr>
+						<th colspan="2">* 정액대금 정산서</th>
+						<th colspan="3">* 송금계좌</th>
+					</tr>
+					<tr>
+						<td class="text-center">사용기간</td>
+						<td class="text-right" id="DT_START_END" ></td>
+						<td>은행명</td>
+						<td id="NM_BANK" ></td>
+						<td rowspan="3" ><img alt=""  th:src='@{http://1.244.192.47:85/ERP-U/shared/image/common/ESLEE/DARVY_journeyman.jpg}'  style="width: 80px;"/></td>
+					</tr>
+					<tr>
+						<th class="text-center">청구금액</th>
+						<td class="text-right"><b id="charge" ></b>  (원)</td>
+						<td>계좌번호</td>
+						<td id="BANK" ></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td></td>
+						<td>예금주</td>
+						<td>(주)다비육종</td>
+					</tr>
+					<tr>
+						<th colspan="5">* 이 번 달 사 용 내 역</th>
+					</tr>
+					<tr>
+						<th><small>지난달 잔액</small></th>
+						<td class="text-right"><small><b id="PRC_REPAY" ></b></small>  (원)</td>
+						<th colspan="3"  style="padding-left: 20px;">* 비 고</th>
+					</tr>
+					<tr>
+						<th>이번달 사용액(+)</th>
+						<th class="text-right"><b id="AMT_PAY" ></b>  (원)</th>
+						<th colspan="3" rowspan="5"  style="padding: 10px 20px;"><div style="border: 1px solid #333; height: 100px;"></div></th>
+					</tr>
+					<tr>
+						<td>&nbsp;&nbsp;<small>정액비용</small></td>
+						<td class="text-right"><small id="AMT_ORG_SALE" ></small>  (원)</td>
+					</tr>
+					<tr>
+						<td>&nbsp;&nbsp;<small>할인액</small></td>
+						<td class="text-right"><small id="AMT_ORG_DISCOUNT" ></small>  (원)</td>
+					</tr>
+					<tr>
+						<td style="border-bottom: 2px solid #333;">이번달 입금액(-)</td>
+						<td class="text-right" style="border-bottom: 2px solid #333;" ><span id="AMT_CREDIT"> </span>  (원)</td>
+					</tr>
+					<tr>
+						<th>현재 미수금 계</th>
+						<th class="text-right"><b id="sum_unpaied">1,574,000 </b>  (원)</th>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="row"><p><b>* 품종별 정액 판매 현황</b></p></div>
+		<div class="row">
+			<table style="border: 1px solid #333; width: -webkit-fill-available;" class="itemSalesTable">
+				<tr style="border-bottom: 2px solid #333;">
+					<td style="border-right: 1px solid #333; width: 115px;">품종/일</td>
+					<td>1</td>
+					<td>2</td>
+					<td>3</td>
+					<td>4</td>
+					<td>5</td>
+					<td>6</td>
+					<td>7</td>
+					<td>8</td>
+					<td>9</td>
+					<td>10</td>
+					<td>11</td>
+					<td>12</td>
+					<td>13</td>
+					<td>14</td>
+					<td>15</td>
+					<td>16</td>
+				</tr>
+				<tr>
+					<td style="border-right: 1px solid #333;">DD</td>
+					<td id="DD_N_D01"  class="DD_N" ></td>
+					<td id="DD_N_D02"  class="DD_N" ></td>
+					<td id="DD_N_D03"  class="DD_N" ></td>
+					<td id="DD_N_D04"  class="DD_N" ></td>
+					<td id="DD_N_D05"  class="DD_N" ></td>
+					<td id="DD_N_D06"  class="DD_N" ></td>
+					<td id="DD_N_D07"  class="DD_N" ></td>
+					<td id="DD_N_D08"  class="DD_N" ></td>
+					<td id="DD_N_D09"  class="DD_N" ></td>
+					<td id="DD_N_D10"  class="DD_N" ></td>
+					<td id="DD_N_D11"  class="DD_N" ></td>
+					<td id="DD_N_D12"  class="DD_N" ></td>
+					<td id="DD_N_D13"  class="DD_N" ></td>
+					<td id="DD_N_D14"  class="DD_N" ></td>
+					<td id="DD_N_D15"  class="DD_N" ></td>
+					<td id="DD_N_D16"  class="DD_N" ></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #333;">
+					<td style="border-right: 1px solid #333;">DD(교환)</td>
+					<td id="DD_Y_D01"  class="DD_Y" ></td>
+					<td id="DD_Y_D02"  class="DD_Y" ></td>
+					<td id="DD_Y_D03"  class="DD_Y" ></td>
+					<td id="DD_Y_D04"  class="DD_Y" ></td>
+					<td id="DD_Y_D05"  class="DD_Y" ></td>
+					<td id="DD_Y_D06"  class="DD_Y" ></td>
+					<td id="DD_Y_D07"  class="DD_Y" ></td>
+					<td id="DD_Y_D08"  class="DD_Y" ></td>
+					<td id="DD_Y_D09"  class="DD_Y" ></td>
+					<td id="DD_Y_D10"  class="DD_Y" ></td>
+					<td id="DD_Y_D11"  class="DD_Y" ></td>
+					<td id="DD_Y_D12"  class="DD_Y" ></td>
+					<td id="DD_Y_D13"  class="DD_Y" ></td>
+					<td id="DD_Y_D14"  class="DD_Y" ></td>
+					<td id="DD_Y_D15"  class="DD_Y" ></td>
+					<td id="DD_Y_D16"  class="DD_Y" ></td>
+				</tr>
+				<tr>
+					<td style="border-right: 1px solid #333;">LL</td>
+					<td id="LL_N_D01"  class="LL_N" ></td>
+					<td id="LL_N_D02"  class="LL_N" ></td>
+					<td id="LL_N_D03"  class="LL_N" ></td>
+					<td id="LL_N_D04"  class="LL_N" ></td>
+					<td id="LL_N_D05"  class="LL_N" ></td>
+					<td id="LL_N_D06"  class="LL_N" ></td>
+					<td id="LL_N_D07"  class="LL_N" ></td>
+					<td id="LL_N_D08"  class="LL_N" ></td>
+					<td id="LL_N_D09"  class="LL_N" ></td>
+					<td id="LL_N_D10"  class="LL_N" ></td>
+					<td id="LL_N_D11"  class="LL_N" ></td>
+					<td id="LL_N_D12"  class="LL_N" ></td>
+					<td id="LL_N_D13"  class="LL_N" ></td>
+					<td id="LL_N_D14"  class="LL_N" ></td>
+					<td id="LL_N_D15"  class="LL_N" ></td>
+					<td id="LL_N_D16"  class="LL_N" ></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #333;">
+					<td style="border-right: 1px solid #333;">LL(교환)</td>
+					<td id="LL_Y_D01"  class="LL_Y" ></td>
+					<td id="LL_Y_D02"  class="LL_Y" ></td>
+					<td id="LL_Y_D03"  class="LL_Y" ></td>
+					<td id="LL_Y_D04"  class="LL_Y" ></td>
+					<td id="LL_Y_D05"  class="LL_Y" ></td>
+					<td id="LL_Y_D06"  class="LL_Y" ></td>
+					<td id="LL_Y_D07"  class="LL_Y" ></td>
+					<td id="LL_Y_D08"  class="LL_Y" ></td>
+					<td id="LL_Y_D09"  class="LL_Y" ></td>
+					<td id="LL_Y_D10"  class="LL_Y" ></td>
+					<td id="LL_Y_D11"  class="LL_Y" ></td>
+					<td id="LL_Y_D12"  class="LL_Y" ></td>
+					<td id="LL_Y_D13"  class="LL_Y" ></td>
+					<td id="LL_Y_D14"  class="LL_Y" ></td>
+					<td id="LL_Y_D15"  class="LL_Y" ></td>
+					<td id="LL_Y_D16"  class="LL_Y" ></td>
+				</tr>
+				<tr>
+					<td style="border-right: 1px solid #333;">YY</td>
+					<td id="YY_N_D01"  class="YY_N" ></td>
+					<td id="YY_N_D02"  class="YY_N" ></td>
+					<td id="YY_N_D03"  class="YY_N" ></td>
+					<td id="YY_N_D04"  class="YY_N" ></td>
+					<td id="YY_N_D05"  class="YY_N" ></td>
+					<td id="YY_N_D06"  class="YY_N" ></td>
+					<td id="YY_N_D07"  class="YY_N" ></td>
+					<td id="YY_N_D08"  class="YY_N" ></td>
+					<td id="YY_N_D09"  class="YY_N" ></td>
+					<td id="YY_N_D10"  class="YY_N" ></td>
+					<td id="YY_N_D11"  class="YY_N" ></td>
+					<td id="YY_N_D12"  class="YY_N" ></td>
+					<td id="YY_N_D13"  class="YY_N" ></td>
+					<td id="YY_N_D14"  class="YY_N" ></td>
+					<td id="YY_N_D15"  class="YY_N" ></td>
+					<td id="YY_N_D16"  class="YY_N" ></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #333;">
+					<td style="border-right: 1px solid #333;">YY(교환)</td>
+					<td id="YY_Y_D01"  class="YY_Y" ></td>
+					<td id="YY_Y_D02"  class="YY_Y" ></td>
+					<td id="YY_Y_D03"  class="YY_Y" ></td>
+					<td id="YY_Y_D04"  class="YY_Y" ></td>
+					<td id="YY_Y_D05"  class="YY_Y" ></td>
+					<td id="YY_Y_D06"  class="YY_Y" ></td>
+					<td id="YY_Y_D07"  class="YY_Y" ></td>
+					<td id="YY_Y_D08"  class="YY_Y" ></td>
+					<td id="YY_Y_D09"  class="YY_Y" ></td>
+					<td id="YY_Y_D10"  class="YY_Y" ></td>
+					<td id="YY_Y_D11"  class="YY_Y" ></td>
+					<td id="YY_Y_D12"  class="YY_Y" ></td>
+					<td id="YY_Y_D13"  class="YY_Y" ></td>
+					<td id="YY_Y_D14"  class="YY_Y" ></td>
+					<td id="YY_Y_D15"  class="YY_Y" ></td>
+					<td id="YY_Y_D16"  class="YY_Y" ></td>
+				</tr>
+				<tr>
+					<td style="border-right: 1px solid #333;">BB</td>
+					<td id="BB_N_D01"  class="BB_N" ></td>
+					<td id="BB_N_D02"  class="BB_N" ></td>
+					<td id="BB_N_D03"  class="BB_N" ></td>
+					<td id="BB_N_D04"  class="BB_N" ></td>
+					<td id="BB_N_D05"  class="BB_N" ></td>
+					<td id="BB_N_D06"  class="BB_N" ></td>
+					<td id="BB_N_D07"  class="BB_N" ></td>
+					<td id="BB_N_D08"  class="BB_N" ></td>
+					<td id="BB_N_D09"  class="BB_N" ></td>
+					<td id="BB_N_D10"  class="BB_N" ></td>
+					<td id="BB_N_D11"  class="BB_N" ></td>
+					<td id="BB_N_D12"  class="BB_N" ></td>
+					<td id="BB_N_D13"  class="BB_N" ></td>
+					<td id="BB_N_D14"  class="BB_N" ></td>
+					<td id="BB_N_D15"  class="BB_N" ></td>
+					<td id="BB_N_D16"  class="BB_N" ></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #333;">
+					<td style="border-right: 1px solid #333;">BB(교환)</td>
+					<td id="BB_Y_D01"  class="BB_Y" ></td>
+					<td id="BB_Y_D02"  class="BB_Y" ></td>
+					<td id="BB_Y_D03"  class="BB_Y" ></td>
+					<td id="BB_Y_D04"  class="BB_Y" ></td>
+					<td id="BB_Y_D05"  class="BB_Y" ></td>
+					<td id="BB_Y_D06"  class="BB_Y" ></td>
+					<td id="BB_Y_D07"  class="BB_Y" ></td>
+					<td id="BB_Y_D08"  class="BB_Y" ></td>
+					<td id="BB_Y_D09"  class="BB_Y" ></td>
+					<td id="BB_Y_D10"  class="BB_Y" ></td>
+					<td id="BB_Y_D11"  class="BB_Y" ></td>
+					<td id="BB_Y_D12"  class="BB_Y" ></td>
+					<td id="BB_Y_D13"  class="BB_Y" ></td>
+					<td id="BB_Y_D14"  class="BB_Y" ></td>
+					<td id="BB_Y_D15"  class="BB_Y" ></td>
+					<td id="BB_Y_D16"  class="BB_Y" ></td>
+				</tr>
+			</table>
+		</div>
+		<div class="row">
+			<table style="border: 1px solid #333;" class="itemSalesTable">
+				<tr style="border-bottom: 2px solid #333;">
+					<td style="border-right: 1px solid #333; width: 115px;">품종/일</td>
+					<td>17</td>
+					<td>18</td>
+					<td>19</td>
+					<td>20</td>
+					<td>21</td>
+					<td>22</td>
+					<td>23</td>
+					<td>24</td>
+					<td>25</td>
+					<td>26</td>
+					<td>27</td>
+					<td>28</td>
+					<td>29</td>
+					<td>30</td>
+					<td>31</td>
+					<td class="text-center"  style="border-left:1px solid #333; width: 55px;">계</td>
+				</tr>
+				<tr>
+					<td style="border-right: 1px solid #333;">DD</td>
+					<td id="DD_N_D17"  class="DD_N" ></td>
+					<td id="DD_N_D18"  class="DD_N" ></td>
+					<td id="DD_N_D19"  class="DD_N" ></td>
+					<td id="DD_N_D20"  class="DD_N" ></td>
+					<td id="DD_N_D21"  class="DD_N" ></td>
+					<td id="DD_N_D22"  class="DD_N" ></td>
+					<td id="DD_N_D23"  class="DD_N" ></td>
+					<td id="DD_N_D24"  class="DD_N" ></td>
+					<td id="DD_N_D25"  class="DD_N" ></td>
+					<td id="DD_N_D26"  class="DD_N" ></td>
+					<td id="DD_N_D27"  class="DD_N" ></td>
+					<td id="DD_N_D28"  class="DD_N" ></td>
+					<td id="DD_N_D29"  class="DD_N" ></td>
+					<td id="DD_N_D31"  class="DD_N" ></td>
+					<td id="DD_N_D31"  class="DD_N" ></td>
+					<td id="DD_N_Sum"  class="text-right"  style="border-left:1px solid #333; "></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #333;">
+					<td style="border-right: 1px solid #333;">DD(교환)</td>
+					<td id="DD_Y_D17"  class="DD_Y" ></td>
+					<td id="DD_Y_D18"  class="DD_Y" ></td>
+					<td id="DD_Y_D19"  class="DD_Y" ></td>
+					<td id="DD_Y_D20"  class="DD_Y" ></td>
+					<td id="DD_Y_D21"  class="DD_Y" ></td>
+					<td id="DD_Y_D22"  class="DD_Y" ></td>
+					<td id="DD_Y_D23"  class="DD_Y" ></td>
+					<td id="DD_Y_D24"  class="DD_Y" ></td>
+					<td id="DD_Y_D25"  class="DD_Y" ></td>
+					<td id="DD_Y_D26"  class="DD_Y" ></td>
+					<td id="DD_Y_D27"  class="DD_Y" ></td>
+					<td id="DD_Y_D28"  class="DD_Y" ></td>
+					<td id="DD_Y_D29"  class="DD_Y" ></td>
+					<td id="DD_Y_D30"  class="DD_Y" ></td>
+					<td id="DD_Y_D31"  class="DD_Y" ></td>
+					<td id="DD_Y_Sum" class="text-right"  style="border-left:1px solid #333; "></td>
+				</tr>
+				<tr>
+					<td style="border-right: 1px solid #333;">LL</td>
+					<td id="LL_N_D17"  class="LL_N" ></td>
+					<td id="LL_N_D18"  class="LL_N" ></td>
+					<td id="LL_N_D19"  class="LL_N" ></td>
+					<td id="LL_N_D20"  class="LL_N" ></td>
+					<td id="LL_N_D21"  class="LL_N" ></td>
+					<td id="LL_N_D22"  class="LL_N" ></td>
+					<td id="LL_N_D23"  class="LL_N" ></td>
+					<td id="LL_N_D24"  class="LL_N" ></td>
+					<td id="LL_N_D25"  class="LL_N" ></td>
+					<td id="LL_N_D26"  class="LL_N" ></td>
+					<td id="LL_N_D27"  class="LL_N" ></td>
+					<td id="LL_N_D28"  class="LL_N" ></td>
+					<td id="LL_N_D29"  class="LL_N" ></td>
+					<td id="LL_N_D30"  class="LL_N" ></td>
+					<td id="LL_N_D31"  class="LL_N" ></td>
+					<td id="LL_N_Sum" class="text-right"  style="border-left:1px solid #333; "></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #333;">
+					<td style="border-right: 1px solid #333;">LL(교환)</td>
+					<td id="LL_Y_D17"  class="LL_Y" ></td>
+					<td id="LL_Y_D18"  class="LL_Y" ></td>
+					<td id="LL_Y_D19"  class="LL_Y" ></td>
+					<td id="LL_Y_D20"  class="LL_Y" ></td>
+					<td id="LL_Y_D21"  class="LL_Y" ></td>
+					<td id="LL_Y_D22"  class="LL_Y" ></td>
+					<td id="LL_Y_D23"  class="LL_Y" ></td>
+					<td id="LL_Y_D24"  class="LL_Y" ></td>
+					<td id="LL_Y_D25"  class="LL_Y" ></td>
+					<td id="LL_Y_D26"  class="LL_Y" ></td>
+					<td id="LL_Y_D27"  class="LL_Y" ></td>
+					<td id="LL_Y_D28"  class="LL_Y" ></td>
+					<td id="LL_Y_D29"  class="LL_Y" ></td>
+					<td id="LL_Y_D30"  class="LL_Y" ></td>
+					<td id="LL_Y_D31"  class="LL_Y" ></td>
+					<td id="LL_Y_Sum"  class="text-right"  style="border-left:1px solid #333; "></td>
+				</tr>
+				<tr>
+					<td style="border-right: 1px solid #333;">YY</td>
+					<td id="YY_N_D17"  class="YY_N" ></td>
+					<td id="YY_N_D18"  class="YY_N" ></td>
+					<td id="YY_N_D19"  class="YY_N" ></td>
+					<td id="YY_N_D20"  class="YY_N" ></td>
+					<td id="YY_N_D21"  class="YY_N" ></td>
+					<td id="YY_N_D22"  class="YY_N" ></td>
+					<td id="YY_N_D23"  class="YY_N" ></td>
+					<td id="YY_N_D24"  class="YY_N" ></td>
+					<td id="YY_N_D25"  class="YY_N" ></td>
+					<td id="YY_N_D26"  class="YY_N" ></td>
+					<td id="YY_N_D27"  class="YY_N" ></td>
+					<td id="YY_N_D28"  class="YY_N" ></td>
+					<td id="YY_N_D29"  class="YY_N" ></td>
+					<td id="YY_N_D30"  class="YY_N" ></td>
+					<td id="YY_N_D31"  class="YY_N" ></td>
+					<td id="YY_N_Sum" class="text-right"  style="border-left:1px solid #333; "></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #333;">
+					<td style="border-right: 1px solid #333;">YY(교환)</td>
+					<td id="YY_Y_D17"  class="YY_Y" ></td>
+					<td id="YY_Y_D18"  class="YY_Y" ></td>
+					<td id="YY_Y_D19"  class="YY_Y" ></td>
+					<td id="YY_Y_D20"  class="YY_Y" ></td>
+					<td id="YY_Y_D21"  class="YY_Y" ></td>
+					<td id="YY_Y_D22"  class="YY_Y" ></td>
+					<td id="YY_Y_D23"  class="YY_Y" ></td>
+					<td id="YY_Y_D24"  class="YY_Y" ></td>
+					<td id="YY_Y_D25"  class="YY_Y" ></td>
+					<td id="YY_Y_D26"  class="YY_Y" ></td>
+					<td id="YY_Y_D27"  class="YY_Y" ></td>
+					<td id="YY_Y_D28"  class="YY_Y" ></td>
+					<td id="YY_Y_D29"  class="YY_Y" ></td>
+					<td id="YY_Y_D30"  class="YY_Y" ></td>
+					<td id="YY_Y_D31"  class="YY_Y" ></td>
+					<td id="YY_Y_Sum" class="text-right"  style="border-left:1px solid #333; "></td>
+				</tr>
+				<tr>
+					<td style="border-right: 1px solid #333;">BB</td>
+					<td id="BB_N_D17"  class="BB_N" ></td>
+					<td id="BB_N_D18"  class="BB_N" ></td>
+					<td id="BB_N_D19"  class="BB_N" ></td>
+					<td id="BB_N_D20"  class="BB_N" ></td>
+					<td id="BB_N_D21"  class="BB_N" ></td>
+					<td id="BB_N_D22"  class="BB_N" ></td>
+					<td id="BB_N_D23"  class="BB_N" ></td>
+					<td id="BB_N_D24"  class="BB_N" ></td>
+					<td id="BB_N_D25"  class="BB_N" ></td>
+					<td id="BB_N_D26"  class="BB_N" ></td>
+					<td id="BB_N_D27"  class="BB_N" ></td>
+					<td id="BB_N_D28"  class="BB_N" ></td>
+					<td id="BB_N_D29"  class="BB_N" ></td>
+					<td id="BB_N_D30"  class="BB_N" ></td>
+					<td id="BB_N_D31"  class="BB_N" ></td>
+					<td id="BB_N_Sum"  class="text-right"  style="border-left:1px solid #333; "></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #333;">
+					<td style="border-right: 1px solid #333;">BB(교환)</td>
+					<td id="BB_Y_D17"  class="BB_Y" ></td>
+					<td id="BB_Y_D18"  class="BB_Y" ></td>
+					<td id="BB_Y_D19"  class="BB_Y" ></td>
+					<td id="BB_Y_D20"  class="BB_Y" ></td>
+					<td id="BB_Y_D21"  class="BB_Y" ></td>
+					<td id="BB_Y_D22"  class="BB_Y" ></td>
+					<td id="BB_Y_D23"  class="BB_Y" ></td>
+					<td id="BB_Y_D24"  class="BB_Y" ></td>
+					<td id="BB_Y_D25"  class="BB_Y" ></td>
+					<td id="BB_Y_D26"  class="BB_Y" ></td>
+					<td id="BB_Y_D27"  class="BB_Y" ></td>
+					<td id="BB_Y_D28"  class="BB_Y" ></td>
+					<td id="BB_Y_D29"  class="BB_Y" ></td>
+					<td id="BB_Y_D30"  class="BB_Y" ></td>
+					<td id="BB_Y_D31"  class="BB_Y" ></td>
+					<td id="BB_Y_Sum"  class="text-right"  style="border-left:1px solid #333; "></td>
+				</tr>
+			</table>
+		</div>
+		<div class="row">
+			<table class="text-center sumTable" style="border: 1px solid #333; width: -webkit-fill-available;">
+				<tbody>
+					<tr style="border-bottom: 1px solid #333;">
+						<th>정액품목 계</th>
+						<th>수량</th>
+						<th class="text-right"  id="QTY_OUT_CNT" ></th>
+						<th>단가</th>
+						<th class="text-right" ></th>
+						<th></th>
+						<th class="text-right"  id="OUT_UNIT" ></th>
+						<th>금액</th>
+						<th class="text-right"  id="AMT_OUT" ></th>
+					</tr>
+					<tr style="border-bottom: 1px solid #333;">
+						<th>기타품목 계</th>
+						<th>수량</th>
+						<th class="text-right"  id="QTY_ETC_CNT" ></th>
+						<th>단가</th>
+						<th class="text-right" ></th>
+						<th></th>
+						<th class="text-right"  id="ETC_UNIT" ></th>
+						<th>금액</th>
+						<th class="text-right"  id="AMT_ETC" ></th>
+					</tr>
+					<tr style="border-bottom: 1px solid #333;">
+						<th>배송비</th>
+						<th>수량</th>
+						<th class="text-right"  id="QTY_CAR_CNT" ></th>
+						<th>단가</th>
+						<th class="text-right" ></th>
+						<th></th>
+						<th class="text-right"  id="CAR_UNIT" ></th>
+						<th>금액</th>
+						<th class="text-right"  id="AMT_CAR" ></th>
+					</tr>
+					<tr>
+						<th>총 합계</th>
+						<th>판매</th>
+						<th class="text-right"  id="qty_total_cnt" >99</th>
+						<th>교환</th>
+						<th class="text-right"  id="qty_exchange" >0</th>
+						<th>계</th>
+						<th class="text-right"  id="qty_gtotal">99</th>
+						<th>금액</th>
+						<th class="text-right"  id="qty_total_price">1,584,000</th>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+<style>
+.itemSalesTable > tbody > tr > td {
+	padding: 1px 10px 1px 10px;
+}
+
+.sumTable > tbody > tr > th {
+	padding: 1px 20px 1px 20px;
+}
+</style>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var accountForm = {
+		data: null,
+		src: "",
+}
+
+function accountFormInit() {
+	
+}
+
+function accountTableSum() {
+	itemData = ["DD_N", "DD_Y", "LL_N", "LL_Y", "YY_N", "YY_Y", "BB_N", "BB_Y"];
+	
+	for(var i in itemData) {
+		var sum = 0;
+		for(var j = 1; j < 32; j++) {
+			var item = $("#" + itemData[i] + "_D" + setTwinNum(j)).text() == "" ? 0 : $("#" + itemData[i] + "_D" + setTwinNum(j)).text()*1;
+			sum += item;
+		}
+		$("#" + itemData[i] + "_Sum").text(sum);
+	}
+}
+
+function ajaxForAccountForm(bodyObj) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		$("#loading").hide();
+		accountForm.data = data.UP_CG_MOB_CHARGE_RPT[0];
+		if(accountForm.data != null) {
+			accountFormSetData(accountForm.data);
+			html2canvas(document.querySelector("#accountCanvas")).then(canvas => {
+				var cavImgStr = canvas.toDataURL('image/png', 1.0);
+				var cd_company = userInfo().CD_COMPANY;
+				var dt_start_end = accountForm.data.DT_START_END;
+				var cd_partner = accountForm.data.CD_PARTNER;
+				$.post('/canv/accountUploadProc'
+					, {strImg : cavImgStr, cd_company: cd_company, dt_start_end: dt_start_end, cd_partner: cd_partner}
+					, function(data) {
+						console.log(data);
+						accountForm.src = 'http://1.244.192.47:85/ERP-U/Upload/bill/' + cd_company + dt_start_end + cd_partner + ".png"
+				});
+			});
+		} else {
+			if($("#accountCanvas").css("display") == "block") {
+				$("#accountCanvas").hide();
+			}
+			bootalert("조회된 데이터가 없습니다.");
+		}
+	});
+}
+
+function accountFormSetData(data) {
+	$("#ID_BIZ_PERSON").text(data.ID_BIZ_PERSON);
+	$("#PERSON_TEL").text(data.PERSON_TEL);
+	$("#ADDR").text(data.ADDR);
+	$("#ADDR1").text(data.ADDR1);
+	$("#NO_TEL").text(data.NO_TEL);
+	$("#LN_PARTNER").text(data.LN_PARTNER);
+	$("#NM_CEO").text(data.NM_CEO);
+	$("#NO_POST1").text(data.NO_POST1);
+	
+	var dtEndList = [data.DT_END.substring(0, 4), data.DT_END.substring(4, 6), data.DT_END.substring(6, 8)];
+	$("#DT_END_STR").text(dtEndList[0] + "년 " + dtEndList[1] + "월 " + dtEndList[2] + "일");
+	
+	var dtStartEndList = [data.DT_START_END.substring(0, 8), data.DT_START_END.substring(8, 16)];
+	$("#DT_START_END").text(makeDateFormat(dtStartEndList[0]) + " ~ " + makeDateFormat(dtStartEndList[1]));
+	
+	var amt_pay = Num(data.AMT_OUT) + Num(data.AMT_ETC) + Num(data.AMT_CAR);
+	var charge =  (Num(data.PRC_REPAY) + amt_pay ) - Num(data.AMT_CREDIT);
+	$("#charge").text(addComma(charge.toString()));
+	
+	$("#NM_BANK").text(data.NM_BANK);
+	$("#BANK").text(data.BANK);
+	$("#PRC_REPAY").text(addComma(data.PRC_REPAY));
+	$("#AMT_PAY").text(addComma(amt_pay.toString()));
+	$("#AMT_ORG_SALE").text(addComma(data.AMT_ORG_SALE));
+	var discount = amt_pay - Num(data.AMT_ORG_SALE);
+	$("#AMT_ORG_DISCOUNT").text(addComma(discount.toString()));
+	$("#AMT_CREDIT").text(addComma(data.AMT_CREDIT));
+	$("#sum_unpaied").text(addComma(charge.toString()));
+	
+	itemData = ["DD_N", "DD_Y", "LL_N", "LL_Y", "YY_N", "YY_Y", "BB_N", "BB_Y"];
+	$.each(data, function(k, v) {
+		for(var i in itemData) {
+			if( k.indexOf(itemData[i]) > -1) {
+				$("#"+k).text(v);
+			}
+		}
+	});
+	
+	accountTableSum(); 
+	
+	$("#QTY_OUT_CNT").text(data.QTY_OUT_CNT);
+	var out_unitPrice = isNaN_unitPrice(data.AMT_OUT, data.QTY_OUT_CNT);
+	$("#OUT_UNIT").text(addComma(out_unitPrice));
+	$("#AMT_OUT").text(addComma(data.AMT_OUT));
+	
+	$("#QTY_ETC_CNT").text(data.QTY_ETC_CNT);
+	var etc_unitPrice = isNaN_unitPrice(data.AMT_ETC, data.QTY_ETC_CNT);
+	$("#ETC_UNIT").text(addComma(etc_unitPrice));
+	$("#AMT_ETC").text(addComma(data.AMT_ETC));
+	
+	$("#QTY_CAR_CNT").text(data.QTY_CAR_CNT);
+	var car_unitPrice = isNaN_unitPrice(data.AMT_CAR, data.QTY_CAR_CNT);
+	$("#CAR_UNIT").text(addComma(car_unitPrice));
+	$("#AMT_CAR").text(addComma(data.AMT_CAR));
+	
+	$("#qty_total_cnt").text(data.QTY_OUT_CNT);
+	$("#qty_exchange").text(data.QTY_EXCHANGE == "" ? "0" : data.QTY_EXCHANGE);
+	$("#qty_gtotal").text(data.QTY_GTOTAL == "" ? "0" : data.QTY_GTOTAL);
+	var qtyTotalPrice = Num(data.AMT_OUT) + Num(data.AMT_ETC) + Num(data.AMT_CAR);
+	$("#qty_total_price").text(addComma(qtyTotalPrice.toString()));
+	
+	$("#accountCanvas").show();
+}
+
+function isNaN_unitPrice(val1, va2) {
+	var num = Num(val1)/Num(va2);
+	if(isNaN(num)) return "";
+	else return num;
+}
+/*]]>*/
+</script>
+</div>
+</html>

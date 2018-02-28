@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<div class="row">
+			<div class='col-xs-12'>
+		        <form >
+			        <div class="form-group">
+						<label class="text-muted col-xs-5">출하 일자</label>
+			            <div class='input-group date col-xs-7'  >
+			                <input type='text' class="form-control"  id="start_date"  th:value="${date}"/>
+				            <span class="input-group-btn">
+				            	<button type="button" class="btn btn-info"  id="shipping_plan_confirm">확인</button>
+				            </span>
+			            </div>
+			        </div>
+		        </form>
+		    </div>
+		</div>
+		<div class="row" >
+			<div class="table-responsive">
+				<table id="shipping_plan_grid" class="table table-condensed" data-paging="true" style="font-size: 15px; margin-bottom: 30px;"></table>
+			</div>
+		</div>
+		<div class="row"  style="margin-top: 50px;">
+			<div class="col-xs-offset-2 col-xs-12 btn-group text-center"  role="group" >
+				<button type="button"  class="btn btn-default"  id="go_partner_detail" style="width: 35%">
+					<i class="fa fa-info" aria-hidden="true"></i>&nbsp;
+					거래처 상세
+				</button>
+				<button type="button"  class="btn btn-default"  id="shippingPlan_pre_view"  style="width: 20%;" >
+					<i class="fa fa-chevron-left" aria-hidden="true"></i>&nbsp;
+					이전
+				</button>
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var shippingPlan = {
+		grid: null,
+		gridData: null,
+		
+}
+$(document).ready(function() {
+	shippingPlanInitialize();
+});
+
+function shippingPlanInitialize() {
+	$("#start_date").css("height", $("#shipping_plan_confirm").css("height"));
+	setTitle("출하 계획");
+	datePickerInitialize();
+	shippingPlangridInitialize();
+	setTimeout(function () {
+		shippingPlanGetDataByAjax(shippingPlanGetData());
+	}, 300);
+	shippingPlanEventBind();
+}
+
+// 데이터 피커 이니셜라이즈
+function datePickerInitialize() {
+	$('#start_date').datetimepicker({
+		 format: "YYYY-MM-DD"
+	 });
+}
+// 데이터 받기 위한 parameter 생성
+function shippingPlanGetData() {
+	var returnObj = {};
+	returnObj.FunctionID = "UP_CG_MOB_SHIP_PLAN_S";
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_DT_PLAN = $("#start_date").val().replace( /-/gi, '');
+	returnObj.P_CD_DRIVER = userInfo().ID_USER;
+	returnObj.P_CD_GROUP = JSON.parse(sessionStorage.getItem("userInfo")).CD_GROUP;
+
+	return returnObj;
+}
+/* 데이터 받아오는 function */
+function shippingPlanGetDataByAjax(bodyObj) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		shippingPlan.gridData = data.UP_CG_MOB_SHIP_PLAN_S;
+		for(var i in shippingPlan.gridData) {
+			shippingPlan.gridData[i].index = Num(i);
+		}
+		shippingPlan.grid.loadRows(shippingPlan.gridData);
+	});
+}
+
+/* 그리드 초기화 */
+function shippingPlangridInitialize(gridDataSource) {
+	$('#shipping_plan_grid').footable({
+		"empty": "조회된 정보가 없습니다.",
+		"paging": {
+			"size": 5
+		},
+		"columns": [
+			{
+				title: '선택',
+				name: 'CD_PARTNER',
+				style:{
+					"width": "15%",
+					"text-align" : "center",
+					"vertical-align" : "middle"
+				},
+				formatter: function(value, options, rowData) {
+	                return '<input type="radio" name="partner_selectRadio" value="'+value+'" />';
+	            }
+			}, {
+	            title: '출고지',
+	            name: 'NM_FARM_SUB',
+	            style:{
+					"width": "150px",
+					"text-align" : "center",
+				}
+	        },
+	        {
+	            title: '거래처',
+	            name: 'NM_PARTNER',
+	            style:{
+					"width": "140px",
+					"text-align" : "left",
+				}
+	        },
+	        {
+	            title: '품목',
+	            name: 'NM_NICK',
+	            style:{
+					"text-align" : "center",
+				}
+	        },
+	        {
+	            title: '계획/출하',
+	            name: 'QTY_PLAN_SALE',
+	            style:{
+					"width": "70px",
+					"text-align" : "center",
+				}
+	        },
+	        {
+	            title: '출하등록',
+	            name: 'YN_SALE',
+	            style:{
+					"width": "70px",
+					"text-align" : "center",
+				},
+	            formatter: function(value, options, rowData) {
+	            	var url = '/breedingPig/shipping_regist?rowData='+encodedJSON(shippingPlan.gridData[rowData.index]);
+	            	if(value == "N" || value == "n") {
+	            		return '<a href="' + url + '" class="btn btn-xs btn-warning" style="font-size:14px;">등록</a>';
+	            	}else {
+	            		return '<a href="' + url + '" class="btn btn-xs btn-default" style="font-size:14px;">수정</a>';
+	            	}
+	            }
+	        },
+	        {
+	            title: '서명',
+	            name: 'YN_SIGN',
+	            style:{
+					"width": "70px",
+					"text-align" : "center",
+				},
+	            width: 70,
+	            align: "index",
+	            formatter: function(value, options, rowData) {
+	            	var url = '/breedingPig/sign_regist?rowData='+encodedJSON(shippingPlan.gridData[rowData.index]);
+	                if(value == "N" || value == "n") {
+	                	return '<a href="' + url + '" class="btn btn-xs btn-warning ship-sign" style="font-size:14px;">등록</a>';
+	                } else if(shippingPlan.gridData[rowData.index].QTY_SALE == "" || shippingPlan.gridData[rowData.index].WEI_SALE == "") {
+	                	return '';
+	                } else {
+	                	return '<a href="' + url + '" class="btn btn-xs btn-default ship-sign" style="font-size:14px;">출력</a>';
+	                }
+	            }
+	        }, {
+				name: 'index',
+				"visible": false
+			}
+		],
+		"rows": []
+	});
+	shippingPlan.grid = FooTable.get('#shipping_plan_grid');
+}
+
+function shippingPlanEventBind() {
+	
+	/* 출하 일자의 확인 클릭 이벤트 */
+	$("#shipping_plan_confirm").click(function() {
+		if($("#start_date").val() != "") {
+			var param = shippingPlanGetData();
+			shippingPlanGetDataByAjax(param);
+		} else {
+			bootalert("날짜를 입력해 주십시오.");
+		}
+	});
+	
+	$("#go_partner_detail").click(function() {
+		var cd_partner = $('input:radio[name="partner_selectRadio"]:checked').val();
+		if(cd_partner == undefined) {
+			bootalert("확인 할 거래처를 선택해 주세요.");
+		} else {
+			location.href = "/sales/partner_detail?partner=" +cd_partner;
+		}
+	});
+	
+	$("#shippingPlan_pre_view").click(function() {
+		history.back();
+	});
+
+}
+/*]]>*/
+</script>
+</div>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 20%;">
+		<div th:text="${paramData}"  style="display: none;" id="form_data"></div>
+		<div class="row">
+			<div class='col-xs-12'>
+		        <form style="font-size: 11pt;">
+		        	<div class="form-group">
+						<select class="selectpicker" data-width="75%"  data-style="btn-info" id="select_plan">
+						  <optgroup label="품종별">
+						    <option value="1">물류계장입력분</option>
+						    <option value="2">ERP 마감후 내역</option>
+						  </optgroup>
+						  <option data-divider="true"></option>
+						  <option value="3">담당자별</option>
+						</select>
+		        	</div>
+			        <div class="form-group">
+						<label class="text-muted col-xs-3 col-sm-2 control-label padTop4">기간</label>
+			            <div class='input-group date col-xs-9 col-sm-10'  >
+				            <div class='input-group date' >
+				                <input type='text' class="form-control"  id="start_month"/>
+				            </div>
+				            <span class="input-group-addon">-</span>
+				             <div class='input-group date' >
+				                <input type='text' class="form-control"  id="end_month"/>
+				            </div>
+				            <span class="input-group-btn">
+				            	<button type="button" class="btn btn-info"  id="confirm_chart_view">확인</button>
+				            </span>
+			            </div>
+			        </div>
+		        </form>
+			</div>
+		</div>
+		<div class="row"  id="byKindViewDiv" >
+			<div th:replace="/mobile/report/comp_by_kind_chart :: chartByKind" ></div>
+		</div>
+		<div class="row"  id="byPersonViewDiv" >
+			<div th:replace="/mobile/report/comp_by_person_chart :: chartByPerson" ></div>
+		</div>
+		<div class="row">
+			<div class="btn-group text-center"  role="group" style="padding: 16px 25% 16px;">
+				<button type="button"  class="btn btn-default"  id="go_pre_view" >
+					<i class="fa fa-chevron-left" aria-hidden="true"></i>
+					&nbsp;이전
+				</button>
+				<button type="button"  class="btn btn-default"  id="go_menu" >
+					<i class="fa fa-list" aria-hidden="true"></i>&nbsp;
+					메뉴
+				</button>
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var chartView = {
+		data: null,
+}
+
+$(document).ready(function() {
+	perfomanceToChartInit();
+});
+
+function perfomanceToChartInit() {
+	setTitle("계획대비실적_도표");
+	$("input[type='text']").css("height", $("#confirm_chart_view").css("height"));
+	perfomanceToChartControles();
+	perfomanceToChartSetInitData();
+	perfomanceToChartEventBind();
+	byKindChartInit();
+	byPersonChartInit();
+// 	perfomanceToPlanSetChart();
+}
+
+function perfomanceToChartSetInitData() {
+	if($("#form_data").text() != null) {
+		var formData = JSON.parse($("#form_data").text()).paramJson;
+		$("#select_plan").val(formData.sel);
+		$("#select_plan").selectpicker('refresh');
+		$('#start_month').val(formData.from);
+		$('#end_month').val(formData.to);
+		selectChangeChartFunc();
+// 		$('#select_plan').trigger("rendered.bs.select");
+	}
+}
+function perfomanceToChartControles() {
+	var thisMon = new Date();
+	var thisMonStr = thisMon.getFullYear() + "-" + setTwinNum(thisMon.getMonth() + 1);
+	$('#start_month').datetimepicker({
+		useCurrent: false,  
+		format: "YYYY-MM",
+		viewMode: 'months',
+		widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'bottom'
+        }
+	 });
+	
+    $('#end_month').datetimepicker({
+    	format: "YYYY-MM",
+		viewMode: 'months'
+    });
+    
+    $('#start_month').val(thisMonStr);
+    $('#end_month').val(thisMonStr);
+    
+	$('#start_month').data("DateTimePicker").maxDate(thisMon);
+    
+    $("#start_month").on("dp.change", function (e) {
+        $('#end_month').data("DateTimePicker").minDate(e.date);
+    });
+    $("#end_month").on("dp.change", function (e) {
+    	if(thisMon > e.date) {
+	    	$('#start_month').data("DateTimePicker").maxDate(e.date);
+    	} else {
+    		$('#start_month').data("DateTimePicker").maxDate(thisMon);
+    	}
+    });
+
+}
+
+function selectChangeChartFunc() {
+	$("#byKindViewDiv").hide();
+	$("#byPersonViewDiv").hide();
+    switch($('#select_plan').val()) {
+        case "1" : 
+        case "2" : $("#byKindViewDiv").show(); 
+          break;
+        case "3" : $("#byPersonViewDiv").show(); 
+            break;
+        default : break;
+    }
+    
+    perfomanceToPlanSetChart();
+}
+
+function perfomanceToPlanSetChart() {
+	var returnObj = new Object();
+	returnObj.P_ym_FROM = $("#start_month").val().replace(/-/gi, '').trim();
+	returnObj.P_ym_TO = $("#end_month").val().replace(/-/gi, '').trim();
+	
+	switch($("#select_plan").val()) {
+		case "1" : returnObj.FunctionID = "UP_CG_MOB_BIZPLAN_S";
+							ajaxforGetDataByKindChart(returnObj);
+							break;
+		case "2" : returnObj.FunctionID = "UP_CG_MOB_BIZPLAN_S2";
+							ajaxforGetDataByKindChart(returnObj);
+							break;
+		case "3" : returnObj.FunctionID = "UP_CG_MOB_BIZPLAN_S3";
+							ajaxforGetDataByKindChart(returnObj);
+							break;
+		default :break;
+	}
+}
+
+function ajaxforGetDataByKindChart(bodyObj) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		switch($("#select_plan").val()) {
+			case "1" : chartView.data = data.UP_CG_MOB_BIZPLAN_S;
+									makeChartDataByKind(chartView.data);
+									break;
+			case "2" : chartView.data = data.UP_CG_MOB_BIZPLAN_S2;
+									makeChartDataByKind(chartView.data);
+									break;
+			case "3" : chartView.data = data.UP_CG_MOB_BIZPLAN_S3;
+									makeChartDataByPerson(chartView.data);
+									break;
+			default :break;
+		}
+	});
+	
+}
+
+
+function perfomanceToChartEventBind() {
+	$('#select_plan').on('rendered.bs.select', selectChangeChartFunc);
+	
+	
+	$("#go_pre_view").click(function() {
+		history.back();
+	});
+	
+	$("#go_menu").click(function() {
+		location.href = "/menu";
+	});
+	
+	$("#confirm_chart_view").click(function() {
+		$('#select_plan').trigger("rendered.bs.select");
+		perfomanceToPlanSetChart();
+	});
+}
+
+/*]]>*/
+</script>
+</div>
+</html>

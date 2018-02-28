@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 20%;">
+		<div class="row">
+			<div class='col-xs-12'>
+		        <form style="font-size: 11pt;">
+		        	<div class="form-group">
+						<select class="selectpicker" data-width="75%"  data-style="btn-info" id="selectPlan">
+						  <optgroup label="품종별">
+						    <option value="1">물류계장입력분</option>
+						    <option value="2">ERP 마감후 내역</option>
+						  </optgroup>
+						  <option data-divider="true"></option>
+						  <option value="3">담당자별</option>
+						</select>
+		        	</div>
+			        <div class="form-group">
+						<label class="text-muted col-xs-3 col-sm-2 control-label padTop4" >기간</label>
+			            <div class='input-group date col-xs-9 col-sm-10' >
+				            <div class='input-group date' >
+				                <input type='text' class="form-control"  id="start_month"/>
+				            </div>
+				            <span class="input-group-addon">-</span>
+				             <div class='input-group date' >
+				                <input type='text' class="form-control"  id="end_month"/>
+				            </div>
+				            <span class="input-group-btn">
+				            	<button type="button" class="btn btn-info"  id="data_confirm_view">확인</button>
+				            </span>
+			            </div>
+			        </div>
+			        <div class="form-group"  style="text-align: right;">
+						<button type="button" class="btn"  id="graph_view">그래프 보기</button>
+		        	</div>
+		        </form>
+				<div class="form-group"  id="byKindViewDiv" >
+					<div th:replace="/mobile/report/comp_by_kind_grid:: gridByKind" ></div>
+				</div>
+				<div class="form-group"  id="byPersonViewDiv" >
+					<div th:replace="/mobile/report/comp_by_person_grid:: gridByPerson" ></div>
+				</div>
+		    </div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+gridView = {
+		data: null,
+}
+$(document).ready(function() {
+	perfomanceToPlanInit();
+});
+
+function perfomanceToPlanInit() {
+	setTitle("계획대비실적_그리드");
+	$("#darby_title").css("font-size", "28px");
+	$("input[type='text']").css("height", $("#data_confirm_view").css("height"));
+	perfomanceToPlanControles();
+	byKindViewInit();
+	byPersonViewInit();
+	perfomanceToPlanEventBind();
+// 	perfomanceToPlanSetGrid();
+}
+
+function perfomanceToPlanControles() {
+	var thisMon = new Date();
+	var thisMonStr = thisMon.getFullYear() + "-" + setTwinNum(thisMon.getMonth() + 1);
+	$('#start_month').datetimepicker({
+		useCurrent: false,  
+		format: "YYYY-MM",
+		viewMode: 'months',
+		widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'bottom'
+        }
+	 });
+	
+    $('#end_month').datetimepicker({
+    	format: "YYYY-MM",
+		viewMode: 'months'
+    });
+    
+    $('#start_month').val(thisMonStr);
+    $('#end_month').val(thisMonStr);
+    
+	$('#start_month').data("DateTimePicker").maxDate(thisMon);
+    
+    $("#start_month").on("dp.change", function (e) {
+        $('#end_month').data("DateTimePicker").minDate(e.date);
+    });
+    $("#end_month").on("dp.change", function (e) {
+    	if(thisMon > e.date) {
+	    	$('#start_month').data("DateTimePicker").maxDate(e.date);
+    	} else {
+    		$('#start_month').data("DateTimePicker").maxDate(thisMon);
+    	}
+    });
+
+}
+
+function selectChangeFunc() {
+	$("#byKindViewDiv").hide();
+	$("#byPersonViewDiv").hide();
+    switch($('#selectPlan').val()) {
+        case "1" : 
+        case "2" : $("#byKindViewDiv").show(); 
+          break;
+        case "3" : $("#byPersonViewDiv").show(); 
+            break;
+        default : break;
+    }
+    perfomanceToPlanSetGrid();
+}
+
+function perfomanceToPlanSetGrid() {
+	var returnObj = new Object();
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_ym_FROM = $("#start_month").val().replace(/-/gi, '').trim();
+	returnObj.P_ym_TO = $("#end_month").val().replace(/-/gi, '').trim();
+	
+	switch($("#selectPlan").val()) {
+		case "1" : returnObj.FunctionID = "UP_CG_MOB_BIZPLAN_S";
+							ajaxForGetDatabyKindView(returnObj, returnObj.FunctionID, byKind.grid);
+							break;
+		case "2" : returnObj.FunctionID = "UP_CG_MOB_BIZPLAN_S2";
+							ajaxForGetDatabyKindView(returnObj, returnObj.FunctionID, byKind.grid);
+							break;
+		case "3" : returnObj.FunctionID = "UP_CG_MOB_BIZPLAN_S3";
+							ajaxForGetDatabyKindView(returnObj, returnObj.FunctionID, byPerson.grid);
+			break;
+		default :break;
+	}
+	
+}
+
+function ajaxForGetDatabyKindView(bodyObj, FunctionID, grid) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		gridView.data = data[FunctionID];
+		grid.setData(gridView.data);
+	});
+}
+
+function perfomanceToPlanEventBind() {
+	$('#selectPlan').on('rendered.bs.select', selectChangeFunc);
+	
+	$("#graph_view").click(function() {
+		var paramObj = new Object();
+		paramObj.sel = $("#selectPlan").val();
+		paramObj.from = $("#start_month").val().trim();
+		paramObj.to = $("#end_month").val().trim();
+		location.href = "/report/perfomance_chart_view?paramData="+encodedJSON(paramObj);
+	});
+	
+	$("#data_confirm_view").click(function() {
+		selectChangeFunc();
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

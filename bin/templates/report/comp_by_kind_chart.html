@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  th:fragment="chartByKind">
+	<div class="row table-responsive" style="margin: 0; padding: 16px;">
+		<div id="by_kind_chart_area"></div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var chartByKind = {
+		chart: null,
+}
+
+function makeChartDataByKind(data) {
+	var chartData = {
+	 	    categories: [],
+	 	    series: {
+	 	        column: [
+	 	            {
+	 	                name: '계획',
+	 	                data: []
+	 	            },
+	 	            {
+	 	                name: '실적',
+	 	                data: []
+
+	 	            },
+	 	        ],
+	 	        line: [
+	 	            {
+	 	                name: '계획(누계)',
+	 	                data: []
+	 	            }, {
+	 	                name: '실적(누계)',
+	 	                data: []
+	 	            }
+	 	        ]
+	 	    }
+	 	}
+	for(var i in data) {
+		chartData.categories.push(data[i].NM_ITEM);
+		chartData.series.column[0].data.push(data[i].QTY_PLAN);
+		chartData.series.column[1].data.push(data[i].QTY_SALE);
+		chartData.series.line[0].data.push(data[i].QTY_PLAN2);
+		chartData.series.line[1].data.push(data[i].QTY_SALE2);
+	}
+	
+	byKindChartInit(chartData);
+}
+
+function byKindChartInit(data) {
+	$("#by_kind_chart_area").empty();
+	var container = document.getElementById('by_kind_chart_area');
+	var options = {
+	    chart: {
+	        width: 450,
+// 	        height: 500,
+// 	        title: '24-hr Average Temperature'
+	    },
+	    legend: {
+	        align: 'bottom'
+	    },
+	    yAxis: {
+	        title: '두수'
+	    },
+	    xAxis: {
+	        title: '품종별'
+	    },
+	    series: {
+	        line: {
+	            showDot: true
+	        }
+	    },
+	    tooltip: {
+	        grouped: true,
+	        suffix: '두'
+	    }
+	};
+	var theme = {
+	    series: {
+	        column: {
+	            colors: ['#74807B',  '#F7A655']
+	        },
+	        line: {
+	            colors: ['#74807B', '#F7A655']
+	        }
+	    }
+	};
+
+	// For apply theme
+
+	tui.chart.registerTheme('myTheme', theme);
+	options.theme = 'myTheme';
+	
+	if(data != null) {
+		chartByKind.chart = tui.chart.comboChart(container, data, options);
+	}
+}
+/*]]>*/
+</script>
+</div>
+</html>

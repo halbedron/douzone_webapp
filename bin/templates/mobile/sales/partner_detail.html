@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%; ">
+		<div th:text="${partner}"  style="display: none;" id="cd_partner"></div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<table class="table table-condensed table-responsive table-striped" >
+							<colgroup>
+								<col class="col-xs-4 col-sm-2" />
+								<col class="col-xs-5 col-sm-8" />
+								<col class="col-xs-3 col-sm-2" />
+							</colgroup>
+							<tbody>
+								<tr>
+									<th scope="row" class="text-muted" >농장명</th>
+									<td id="farmName"  colspan="2" ></td>
+								</tr>
+								<tr style="background-color: white;">
+									<th scope="row" class="text-muted">대표자</th>
+									<td id="representative" colspan="2"></td>
+								</tr>
+								<tr>
+									<th scope="row" class="text-muted">주소(사업장)</th>
+									<td  id="businessAddr"  ></td>
+									<td ><button type="button"  class="btn btn-info" id="viewMap" >지도보기</button></td>
+								</tr>
+								<tr style="background-color: white;">
+									<th scope="row" class="text-muted">주소(우편물)</th>
+									<td id="mailingAddr" colspan="2"></td>
+								</tr>
+								<tr>
+									<th scope="row" class="text-muted">사업자등록번호</th>
+									<td id="businessNumber"  colspan="2" ></td>
+								</tr>
+								<tr style="background-color: white;">
+									<th scope="row" class="text-muted">가입단체</th>
+									<td id="joinedGroup" colspan="2"></td>
+								</tr>
+								<tr>
+									<th scope="row" class="text-muted">모돈수</th>
+									<td id="sowCnt"  colspan="2" ></td>
+								</tr>
+								<tr style="background-color: white;">
+									<th scope="row" class="text-muted">식별번호</th>
+									<td id="identificationNumber" colspan="2"></td>
+								</tr>
+								<tr>
+									<th scope="row" class="text-muted">영업지역</th>
+									<td id="businessArea"  colspan="2" ></td>
+								</tr>
+							</tbody>
+						</table>
+						<table class="table table-condensed table-responsive table-bordered"  style="background-color: white;">
+							<colgroup>
+								<col class="col-xs-3 col-sm-2" />
+								<col class="col-xs-5 col-sm-5" />
+								<col class="col-xs-4 col-sm-5" />
+							</colgroup>
+							<thead>
+								<tr class="active">
+									<th></th>
+									<th class="text-muted text-center">전화</th>
+									<th class="text-muted text-center">팩스</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<th scope="row" class="text-muted text-center">사무실</th>
+									<td id="officeNum" ></td>
+									<td id="officeFax" ></td>
+								</tr>
+								<tr style="background-color: white;">
+									<th scope="row" class="text-muted text-center">농장</th>
+									<td id="farmNum"  ></td>
+									<td id="farmFax"  ></td>
+								</tr>
+							</tbody>
+						</table>
+						<table class="table table-condensed table-responsive table-bordered"  style="background-color: white;">
+							<colgroup>
+								<col class="col-xs-3 col-sm-2" />
+								<col class="col-xs-3 col-sm-5" />
+								<col class="col-xs-6 col-sm-5" />
+							</colgroup>
+							<thead>
+								<tr class="active" >
+									<th></th>
+									<th class="text-muted text-center">이름</th>
+									<th class="text-muted text-center">핸드폰</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr style="background-color: white;">
+									<th scope="row" class="text-muted text-center">대표</th>
+									<td id="readerName" ></td>
+									<td id="readerPhone" ></td>
+								</tr>
+								<tr>
+									<th scope="row" class="text-muted text-center">사모</th>
+									<td id="madamName" ></td>
+									<td id="madamPhone" ></td>
+								</tr>
+								<tr style="background-color: white;">
+									<th scope="row" class="text-muted text-center">농장장</th>
+									<td id="farmHeadName" ></td>
+									<td id="farmHeadPhone" ></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row text-center">
+			<button type="button"  id="patnerInfoDetail_pre_view"  class="btn btn-default"  style="margin-bottom: 20px;">
+				<i class="fa fa-chevron-left" aria-hidden="true"></i>&nbsp;
+				이전
+			</button>
+		</div>
+	</div>
+<style>
+#map img {
+  max-width: none;
+  height: auto;
+  border: 0;
+  -ms-interpolation-mode: bicubic;
+}
+</style>
+<!-- 구글 맵 -->
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?key=AIzaSyAa15KHGQuLxE2qDsLZi7_44UwwRvTfd_c"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var patnerInfoDetail = {
+		center: null,
+		data: null,
+		map: null,
+}
+$(document).ready(function() {
+	patnerInfoDetailInit();
+});
+
+function patnerInfoDetailInit() {
+	setTitle("고객 정보 : 상세");
+	patnerInfoGetData();
+	patnerInfoDetailEventBind();
+}
+
+function patnerInfoGetData() {
+	var bodyObj = new Object();
+	bodyObj.FunctionID = "UP_CG_MOB_PARTNER_S";
+	bodyObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	bodyObj.P_CD_PARTNER = $("#cd_partner").text();
+	
+	commonAjaxForGetData(bodyObj, function(data) {
+		patnerInfoDetail.data = data.UP_CG_MOB_PARTNER_S[0];
+		patnerInfoSetData(patnerInfoDetail.data);
+	});
+}
+
+function patnerInfoSetData(patnerInfoData) {
+	if(patnerInfoData != null && patnerInfoData != {}) {
+		$("#farmName").text("");
+		$("#farmName").text(patnerInfoData.NM_PARTNER);
+		
+		$("#representative").text("");
+		$("#representative").text(patnerInfoData.NM_CEO);
+		var tempString = '(';
+		var index = patnerInfoData.ADDR_H.indexOf(tempString);
+		var oriAddr = "";
+		if(index > -1) {
+			oriAddr = patnerInfoData.ADDR_H.split(tempString)[0];
+		} else {
+			oriAddr = patnerInfoData.ADDR_H
+		}
+		$("#businessAddr").text("");
+		$("#businessAddr").text(oriAddr);
+		
+		$("#mailingAddr").text("");
+		$("#mailingAddr").text(patnerInfoData.ADDR_POST);
+		
+		$("#businessNumber").text("");
+		$("#businessNumber").text(patnerInfoData.NO_COMPANY);
+		
+		$("#joinedGroup").text("");
+		$("#joinedGroup").text(patnerInfoData.NM_PARTNER_GROUP);
+		
+		$("#sowCnt").text("");
+		$("#sowCnt").text(patnerInfoData.QTY_KEEP);
+		
+		$("#identificationNumber").text("");
+		$("#identificationNumber").text(patnerInfoData.NO_MERCHANT);
+		
+		$("#businessArea").text("");
+		$("#businessArea").text(patnerInfoData.NM_BIZ_PERSON);
+		
+		$("#officeNum").text("");
+		$("#officeNum").text(patnerInfoData.NO_TEL4);
+		$("#officeFax").text("");
+		$("#officeFax").text(patnerInfoData.NO_FAX4);
+		
+		$("#farmNum").text("");
+		$("#farmNum").text(patnerInfoData.NO_TEL6);
+		$("#farmFax").text("");
+		$("#farmFax").text(patnerInfoData.NO_FAX6);
+		
+		$("#readerName").text("");
+		$("#readerName").text(patnerInfoData.NM_CEO);
+		$("#readerPhone").text("");
+		$("#readerPhone").text(patnerInfoData.NO_HP_CEO);
+		
+		$("#madamName").text("");
+		$("#madamName").text(patnerInfoData.NM_WIFE);
+		$("#madamPhone").text("");
+		$("#madamPhone").text(patnerInfoData.NO_HP_WIFE);
+		
+		$("#farmHeadName").text("");
+		$("#farmHeadName").text(patnerInfoData.NM_FARMER);
+		$("#farmHeadPhone").text("");
+		$("#farmHeadPhone").text(patnerInfoData.NO_HP_FARMER);
+
+	}
+}
+
+function geoCode() {
+	var addr = $("#businessAddr").text();
+	var geocoder = new google.maps.Geocoder();
+	geocoder.geocode({'address' : addr, 'partialmatch' : true}, geocodeResult);
+}
+
+function geocodeResult(results, status) {
+	patnerInfoDetail.lat = results[0].geometry.location.lat();
+	patnerInfoDetail.lng = results[0].geometry.location.lng();
+	location.href="/sales/map_view?addr="+$("#businessAddr").text()+"&lat="+patnerInfoDetail.lat+"&lng="+patnerInfoDetail.lng;
+}
+
+function patnerInfoDetailEventBind() {
+	$("#patnerInfoDetail_pre_view").click(function() {
+		history.back();
+	});
+	
+	$("#viewMap").click(function() {
+		geoCode();
+	});
+
+}
+
+function resizeMap() {
+   if(typeof map == "undefined") return;
+   setTimeout( function(){resizingMap();} , 400);
+}
+
+function resizingMap() {
+   if(typeof map == "undefined") return;
+   var center = map.getCenter();
+   google.maps.event.trigger(map, "resize");
+   map.setCenter(center); 
+}
+
+/*]]>*/
+</script>
+</div>
+</html>

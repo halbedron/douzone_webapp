@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<div id="loading" style="display: none;">
+			<img id="loading-image"  th:src='@{/images/ajax-loader.gif}'  alt="Loading..."  style="width: 100%; height:20px;  margin-bottom: 30px;"/>
+		</div>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12">
+				<form class="form-horizontal" style="font-size: 11pt;">
+					<div class="form-group">
+						<label for="businessField " class="col-xs-3 col-sm-2 control-label padTop4 text-muted"  style="padding-right: 0px;">사업부문</label>
+						<div class="col-xs-9 col-sm-10">
+							<select class="form-control selectpicker"  id="business_part_sel"  >
+							</select>
+						</div>
+					</div>
+					<div class="form-group"  style="margin-bottom: 0px;">
+					</div>
+					<div class="form-group">
+						<label for="shipmentDays" class="col-xs-2 col-sm-4 control-label padTop4 text-muted" style="padding-right: 0px">기간</label>
+						<div class="col-xs-10 col-sm-8">
+							 <div class='input-group date  input-daterange' >
+					            <div class='input-group date' >
+					                <input type='text' class="form-control"   id="income_start"/>
+					            </div>
+						            <span class="input-group-addon">-</span>
+					             <div class='input-group date' >
+					                <input type='text' class="form-control"  id="income_end" />
+					            </div>
+				            </div>
+			            </div>
+					</div>
+					<div class="form-group">
+						<label for="salesArea " class="col-xs-3 col-sm-2 control-label padTop4 text-muted"  style="padding-right: 0px;">영업지역</label>
+						<div class="col-xs-9 col-sm-10">
+							<select class="form-control selectpicker"  id="sales_area_sel"  >
+							</select>
+						</div>
+					</div>
+					<div class="form-group" style="padding-right: 20px;">
+						<button type="button" class="btn btn-info col-xs-offset-6 col-xs-6 col-sm-offset-4 col-sm-4" id="collection_status_search">
+							<i class="fa fa-binoculars" aria-hidden="true"></i>&nbsp;조회
+						</button>
+					</div>
+				</form>
+				<div class="row">
+					<div class="table-responsive">
+						<table id="collection_status_grid" class="table table-condensed" data-paging="true"  data-sorting="true"  style="font-size: 15px; margin-bottom: 30px;"></table>
+					</div>
+				</div>
+				<div class="row">
+					<div class="btn-group text-center"  role="group" style="padding-left: 25px;">
+						<button type="button"  class="btn btn-default"  id="go_accounts_receivable" >
+							<i class="fa fa-chevron-left" aria-hidden="true"></i>
+							&nbsp;미수 현황
+						</button>
+						<button type="button"  class="btn btn-default"  id="go_menu" >
+							<i class="fa fa-list" aria-hidden="true"></i>&nbsp;
+							메뉴
+						</button>
+						<button type="button"  class="btn btn-default"  id="go_pig_farm_price" >
+							돈가시세정보&nbsp;
+							<i class="fa fa-chevron-right" aria-hidden="true"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var collectionStatus = {
+		grid: null,
+		data: null,
+}
+	
+$(document).ready(function() {
+	collectionStatusInit();
+});
+
+function collectionStatusInit() {
+	setTitle("수금현황");
+	creditSalesStatusSelectInit();
+	collectionStatusControles();
+	collectionStatusGridInit();
+	collectionStatusEventBind();
+}
+
+function creditSalesStatusSelectInit() {
+	commonSelectInit('CG_BA_0001', '#business_part_sel', '0', '선택');
+	commonSelectInit('CG_BS_0010', '#sales_area_sel', '0', '선택');
+}
+
+function collectionStatusControles() {
+	var today = new Date();
+	var todayStr = today.getFullYear() + "-" + setTwinNum(today.getMonth() + 1) + "-" + setTwinNum(today.getDate());
+	$('#income_start').datetimepicker({
+		useCurrent: false,  
+		format: "YYYY-MM-DD",
+		widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'bottom'
+        }
+	 });
+	
+    $('#income_end').datetimepicker({
+    	format: "YYYY-MM-DD"
+    });
+    
+    $('#income_start').val(todayStr);
+    $('#income_end').val(todayStr);
+    
+	$('#income_start').data("DateTimePicker").maxDate(today);
+    
+    $("#income_start").on("dp.change", function (e) {
+        $('#income_end').data("DateTimePicker").minDate(e.date);
+    });
+    $("#income_end").on("dp.change", function (e) {
+    	if(today > e.date) {
+	    	$('#income_start').data("DateTimePicker").maxDate(e.date);
+    	} else {
+    		$('#income_start').data("DateTimePicker").maxDate(today);
+    	}
+    });
+
+}
+
+function collectionStatusGridInit() {
+	$('#collection_status_grid').footable({
+		"empty": "조회된 정보가 없습니다.",
+		"paging": {
+			"size": 5
+		},
+		"columns": [
+			{
+				title: '입금일',
+				name: 'DT_CREDIT',
+				style:{
+					"text-align": "center"
+				},
+				formatter: function(value, options, rowData) {
+					 return makeDateFormat(value);
+	            },
+	            "sorted": true,
+			} ,{
+				title: '영업지역',
+				name: 'NM_BIZ_PERSON',
+				style:{
+					"text-align": "center"
+				}
+			} ,{
+				title: '거래처',
+				name: 'NM_PARTNER',
+				style:{
+					"text-align": "center"
+				}
+			}, {
+				title: '입금액',
+				name: 'AMT_CREDIT',
+				style:{
+					"text-align": "right"
+				},
+	            formatter: function(value, rowData) {
+	                return format(value);
+	            }
+			}
+		],
+		"rows": []
+	});
+	collectionStatus.grid = FooTable.get('#collection_status_grid');
+}
+
+function collectionStatusSearchForValidation() {
+	if($("#business_part_sel").val() == "0" || $("#business_part_sel").val() == null) {
+		bootalert("사업부문 선택은 필수 입니다.");
+		return false;
+	}
+	
+	return true;
+}
+
+function collectionStatusForGetData() {
+	var returnObj = new Object();
+	returnObj.FunctionID = "UP_CG_MOB_INCOME_S";
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_BIZ_FIELD = $("#business_part_sel").val();
+	returnObj.P_DT_FROM = $("#income_start").val().replace(/-/gi, '').trim();
+	returnObj.P_DT_TO = $("#income_end").val().replace(/-/gi, '').trim();
+	returnObj.P_ID_BIZ_PERSON = $("#sales_area_sel").val();
+	
+	return returnObj;
+}
+
+function collectionStatusSearch(bodyObj) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		collectionStatus.data = data.UP_CG_MOB_INCOME_S;
+		collectionStatus.grid.loadRows(collectionStatus.data);
+		$("#loading").hide();
+	});
+}
+
+function collectionStatusEventBind() {
+	$("#go_accounts_receivable").click(function() {
+		location.href = "/sales/accounts_receivable_status";
+	});
+	
+	$("#go_menu").click(function() {
+		location.href = "/menu";
+	});
+	
+	$("#go_pig_farm_price").click(function() {
+		location.href = "/sales/pig_farm_price_information";
+	});
+	
+	$("#collection_status_search").click(function() {
+		if(collectionStatusSearchForValidation()) {
+			$("#loading").show();
+			collectionStatusSearch(collectionStatusForGetData());
+		}
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

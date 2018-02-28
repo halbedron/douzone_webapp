@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  th:fragment="partnerSearch">
+	<div class="container-fluid">
+		<form class="form-horizontal" style="font-size: 11pt;">
+			<div class="form-group">
+				<label for="ln_partner" class="col-xs-5 col-sm-3 control-label padTop4 text-muted" style="padding-right: 0;">농장명 / 대표자</label>
+				<div class="col-xs-7 col-sm-8">
+					<input type="text"  class="form-control" id="ln_partner"  />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="cities" class="col-xs-3 col-sm-2 control-label padTop4 text-muted">시군</label>
+				<div class="col-xs-9 col-sm-9">
+					<input type="text"  class="form-control" id="cities"  />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="joined_group" class="col-xs-4 col-sm-2 control-label padTop4 text-muted">가입단체</label>
+				<div class="col-xs-8 col-sm-9">
+					<input type="text"  class="form-control" id="joined_group"  />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="assignment_area_sel" class="col-xs-4 col-sm-2 control-label padTop4 text-muted">담당지역</label>
+				<div class="col-xs-8 col-sm-9">
+					<select class="form-control selectpicker"  id="assignment_area_sel"  >
+					</select>
+				</div>
+			</div>
+			<div class="row form-group">
+					<button type="button" class="btn btn-info col-xs-offset-7 col-xs-4" id="search_costomer">
+						<i class="fa fa-search" aria-hidden="true"></i> 검색
+					</button>
+			</div>
+		</form>
+		<div class="row">
+			<table id="costomer_grid" class="table table-condensed" data-paging="true" style="font-size: 15px; margin-bottom: 0"></table>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+partner = {
+	grid: null,
+	getRow: null,
+}
+
+function partnerInit() {
+	partnerGridInit();
+	partnerSelectInit();
+	partnerEventBind();
+}
+
+/**
+ * selectpicker를 동적으로 만드는 공통 함수(commonjs에 있음)
+ */
+function partnerSelectInit() {
+	commonSelectInit('CG_BS_0010', '#assignment_area_sel', '0');
+}
+
+function partnerGetData() {
+	if(partnerValidation) {
+		var paramObj = commonPartnerGetData($("#ln_partner").val().trim(), $("#cities").val().trim(), $("#joined_group").val().trim(), $("#assignment_area_sel").val() == "0" ? "" : $('#assignment_area_sel').val());
+		commonAjaxForPatnerSerach(paramObj, partnerGetDataCallback);
+	}
+}
+
+function partnerGetDataCallback(data) {
+	gridData = new Array();
+	gridData = JSON.parse(data).result.List.UP_CG_MOB_PARTNER_POP_S;
+	for(var i in gridData) {
+		gridData[i].index = Num(i);
+	}
+	partner.grid.loadRows(gridData);
+}
+
+function partnerValidation() {
+	if($("ln_partner").val().trim() == null || $("ln_partner").val().trim() == "") {
+		bootalert("농장명 / 대표자 입력은 필수 입니다. 둘 중 하나만 써주시면 됩니다.");
+		return false;
+	}
+	
+	return true;
+}
+
+function partnerGridInit() {
+	$('#costomer_grid').footable({
+		"empty": "조회된 정보가 없습니다.",
+		"paging": {
+			"size": 5
+		},
+		"columns": [
+			{
+				title: '선택',
+				name: 'index',
+				style:{
+					"width": "15%",
+					"text-align" : "center",
+					"vertical-align" : "middle"
+				},
+				formatter: function(value, options, rowData) {
+	                return '<input type="radio" name="selectRadio" value="'+value+'" />';
+	            }
+			}, {
+				title: '농장명',
+				name: 'LN_PARTNER',
+				style:{
+					"width": "30%",
+					"vertical-align" : "middle"
+				}
+			}, {
+				title: '대표자',
+				name: 'NM_CEO',
+				style:{
+					"width": "20%",
+					"vertical-align" : "middle"
+				}
+			}, {
+				title: '시군명',
+				name: 'NM_CITYGU',
+				style:{
+					"width": "20%",
+					"vertical-align" : "middle"
+				}
+			}, {
+				title: '영업지역',
+				name: 'NM_BIZ_PERSON',
+				style:{
+					"width": "15%",
+					"text-align" : "center",
+					"vertical-align" : "middle"
+				}
+			}, {
+				name: 'CD_PARTNER',
+				"visible": false
+			}
+		],
+		"rows": []
+	});
+	partner.grid = FooTable.get('#costomer_grid');
+	
+}
+
+function partnerEventBind() {
+	$("#search_costomer").click(function() {
+		partnerGetData();
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

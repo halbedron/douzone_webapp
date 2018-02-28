@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  th:fragment="gridByKind">
+	<div class="container-fluid" >
+		<div class="row">
+			 <div class='col-xs-12'>
+				 <form class="form-horizontal">
+		        	<div class="form-group" id="grid_by_kind_div">
+						<div id="by_kind_grid"></div>
+		        	</div>
+		        </form>
+	        </div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var byKind = {
+		grid: null,
+		data: null,
+}
+
+function byKindViewInit() {
+	byKindViewGridInit();
+	byKindViewEventBind();
+}
+
+function byKindViewGridInit() {
+	
+	byKind.grid = new tui.Grid({
+		el: $('#by_kind_grid'),
+		data: [],
+		virtualScrolling: false,
+		scrollX: true,
+		scrollY: false,
+		displayRowCount: 10,
+		columnFixIndex: 5,
+		columns: [
+			{
+				title: '품종별',
+				name: 'NM_ITEM',
+				align : "center",
+				width: 150
+			},{
+				title: '계획',
+				name: 'QTY_PLAN',
+				align : "center",
+				width: 80
+			}, {
+				title: '실적',
+				name: 'QTY_SALE',
+				align : "center",
+				width: 80
+			}, {
+				title: '계획(누계)',
+				name: 'QTY_PLAN2',
+				align : "center",
+				width: 100
+			}, {
+				title: '실적(누계)',
+				name: 'QTY_SALE2',
+				align : "center",
+				width: 100
+			}
+		] ,
+	    summary: {
+	        position: 'bottom',
+	        height: 30,  // by pixel
+	        columnContent: {
+	        	NM_ITEM: {
+	                template: function() {
+	                    return '합계';
+	                }
+	            },
+	            QTY_PLAN: {
+	                template: function(valueMap) {
+	                	return format(valueMap.sum);
+	                }
+	            },
+	            QTY_SALE: {
+	                template: function(valueMap) {
+	                	return format(valueMap.sum);
+	                }
+	            },
+	            QTY_PLAN2: {
+	                template: function(valueMap) {
+	                	return format(valueMap.sum);
+	                }
+	            },
+	            QTY_SALE2: {
+	                template: function(valueMap) {
+	                	return format(valueMap.sum);
+	                }
+	            }
+	        }
+	    }
+	});
+}
+
+function byKindViewEventBind() {
+
+}
+/*]]>*/
+</script>
+</div>
+</html>

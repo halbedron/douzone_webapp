@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<form class="form-horizontal" style="font-size: 11pt;">
+			<div class="form-group">
+				<label for="ln_partner" class="col-xs-5 col-sm-3  control-label padTop4 text-muted" >농장명 / 대표자</label>
+				<div class="col-xs-7 col-sm-8">
+					<input type="text"  class="form-control" id="ln_partner"  />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="cities" class="col-xs-4 col-sm-3 control-label padTop4 text-muted">시군</label>
+				<div class="col-xs-8 col-sm-8">
+					<input type="text"  class="form-control" id="cities"  />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="joined_group" class="col-xs-4 col-sm-3 control-label padTop4 text-muted">가입단체</label>
+				<div class="col-xs-8 col-sm-8">
+					<input type="text"  class="form-control" id="joined_group"  />
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="assignment_area_sel" class="col-xs-4 col-sm-3 control-label padTop4 text-muted">담당지역</label>
+				<div class="col-xs-8 col-sm-8">
+					<select class="form-control selectpicker"  id="assignment_area_sel"  >
+					</select>
+				</div>
+			</div>
+			<div class="row form-group" style="padding-left: 100px;">
+				<button type="button" class="btn btn-info col-xs-offset-7 col-xs-4" id="search_costomer">
+					<i class="fa fa-search" aria-hidden="true"></i>&nbsp;검색
+				</button>
+			</div>
+		</form>
+		<div class="row">
+			<table id="costomer_grid" class="table table-condensed" data-paging="true" style="font-size: 15px;"></table>
+		</div>
+		<div class="row">
+			<div class="col-xs-offset-3 btn-group text-center"  role="group" >
+				<button type="button"  class="btn btn-default"  id="go_menu" >
+					<i class="fa fa-list" aria-hidden="true"></i>&nbsp;
+					메뉴
+				</button>
+				<button type="button"  class="btn btn-default"  id="go_shipping_related" >
+					출하관련&nbsp;
+					<i class="fa fa-chevron-right" aria-hidden="true"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+<style>
+	.form-control {
+		height: 30px;
+	}
+	
+	.form-group {
+		margin-bottom: 9px;
+	}
+</style>
+<script th:inline="javascript">
+/*<![CDATA[*/
+cosInfo = {
+		grid: null,
+}
+$(document).ready(function() {
+	costomerInfoInit();
+});
+
+function costomerInfoInit() {
+	setTitle("고객 정보");
+	if(JSON.parse(sessionStorage.getItem("userInfo")).CD_GROUP == "8030") {
+		 $("#go_shipping_related").remove();
+		 $($("#go_menu").parent()[0]).removeClass("col-xs-offset-3").addClass("col-xs-offset-5");
+	 }
+	costomerInfoSelectInit();
+	costomerInfoGridInit();
+	costomerInfoEventBind();
+}
+
+function costomerInfoSelectInit() {
+	commonSelectInit('CG_BS_0010', '#assignment_area_sel', '0');
+}
+
+function costomerInfoGetData() {
+	if(costomerInfoValidation()) {
+		var paramObj = commonPartnerGetData($("#ln_partner").val().trim(), $("#cities").val().trim(), $("#joined_group").val().trim(), $("#assignment_area_sel").val() == "0" ? "" : $('#assignment_area_sel').val());
+		commonAjaxForPatnerSerach(paramObj, costomerInfoGetDataCallback);
+		
+	}
+}
+function costomerInfoGetDataCallback(data) {
+	gridData = JSON.parse(data).result.List.UP_CG_MOB_PARTNER_POP_S;
+	cosInfo.grid.loadRows(gridData);
+}
+
+function costomerInfoValidation() {
+	if($("#ln_partner").val().trim() == null || $("#ln_partner").val().trim() == "") {
+		bootalert("농장명 / 대표자 입력은 필수 입니다. 둘 중 하나만 써주시면 됩니다.");
+		return false;
+	}
+	
+	return true;
+}
+
+function costomerInfoGridInit() {
+	$('#costomer_grid').footable({
+		"empty": "조회된 정보가 없습니다.",
+		"paging": {
+			"size": 5
+		},
+		"columns": [
+			{
+				title: '농장명',
+				name: 'LN_PARTNER',
+				style:{
+					"width": "45%"
+				},
+				formatter: function(value, options, rowData) {
+					var url = '/sales/partner_detail?partner='+rowData.CD_PARTNER;
+
+	                return '<a href="' + url + '" >' + value + '</a>';
+	            }
+			}, {
+				title: '대표자',
+				name: 'NM_CEO',
+				style:{
+					"width": "20%"
+				}
+			}, {
+				title: '시군명',
+				name: 'NM_CITYGU',
+				style:{
+					"width": "20%"
+				}
+			}, {
+				title: '영업지역',
+				name: 'NM_BIZ_PERSON',
+				style:{
+					"width": "15%"
+				}
+			}, {
+				name: 'CD_PARTNER',
+				"visible": false
+			}
+		],
+		"rows": []
+	});
+	cosInfo.grid = FooTable.get('#costomer_grid');
+}
+
+function costomerInfoEventBind() {
+	$("#search_costomer").click(function() {
+		costomerInfoGetData();
+	});
+	
+	$("#go_menu").click(function() {
+		location.href = "/menu";
+	});
+	
+	$("#go_shipping_related").click(function() {
+		location.href = "/sales/shipping_related";
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

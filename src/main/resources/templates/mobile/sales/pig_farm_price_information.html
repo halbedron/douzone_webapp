@@ -1,0 +1,333 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12">
+				<form class="form-horizontal" style="font-size: 11pt;">
+					<div class="form-group">
+						<label for="thisWeek " class="col-xs-5 col-sm-3 control-label padTop4 text-muted" >이번주적용돈가</label>
+						<div class="col-xs-6 col-sm-8">
+							<input type="text"  class="form-control" id="thisWeek" />
+						</div>
+						<label class="padTop4 text-muted">원</label>
+					</div>
+					<div class="form-group" style="margin-bottom: 50px;">
+						<label for="beforeDay" class="col-xs-5 col-sm-3 control-label padTop4 text-muted" >
+							전일돈가
+							<small id="yesterDay"></small> 
+						</label>
+						<div class="col-xs-6 col-sm-8">
+							<input type="text"  class="form-control" id="beforeDay"  />
+						</div>
+						<label class="padTop4 text-muted">원</label>
+					</div>
+					<div id="loading" style="display: none;">
+						<img id="loading-image"  th:src='@{/images/ajax-loader.gif}'  alt="Loading..."  style="width: 100%; height:20px;  margin-bottom: 30px;"/>
+					</div>
+					<div class="form-group">
+						<label for="infoDays" class="col-xs-2 col-sm-4 control-label padTop4 text-muted" style="padding-right: 0px">기간</label>
+						<div class="col-xs-10 col-sm-8">
+							 <div class='input-group date  input-daterange' >
+					            <div class='input-group date' >
+					                <input type='text' class="form-control"   id="start_day"/>
+					            </div>
+						            <span class="input-group-addon">-</span>
+					             <div class='input-group date' >
+					                <input type='text' class="form-control"  id="end_day" />
+					            </div>
+				            </div>
+			            </div>
+					</div>
+					<div class="form-group" style="padding-right: 20px;">
+						<button type="button" class="btn btn-info col-xs-offset-6 col-xs-6 col-sm-offset-4 col-sm-4" id="price_information_search">
+							<i class="fa fa-binoculars" aria-hidden="true"></i>&nbsp;조회
+						</button>
+					</div>
+				</form>
+				<div class="row">
+					<div class="table-responsive">
+						<table id="price_information_grid" class="table table-condensed" data-paging="true" style="font-size: 15px; margin-bottom: 30px;"></table>
+					</div>
+				</div>
+				<div class="row">
+					<div class="btn-group text-center"  role="group"  style="padding: 16px 20% 16px;">
+						<button type="button"  class="btn btn-default"  id="go_collection_status" >
+							<i class="fa fa-chevron-left" aria-hidden="true"></i>
+							&nbsp;수금 현황
+						</button>
+						<button type="button"  class="btn btn-default"  id="go_menu" >
+							<i class="fa fa-list" aria-hidden="true"></i>&nbsp;
+							메뉴
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var priceInformation = {
+		grid: null,
+		data: null,
+}
+	
+$(document).ready(function() {
+	priceInformationInit();
+});
+
+function priceInformationInit() {
+	setTitle("돈가 시세 정보");
+	priceInformationControles();
+	getPigPriceInit();
+	priceInformationGridInit();
+	priceInformationEventBind();
+}
+
+function priceInformationControles() {
+	var today = new Date();
+	var todayStr = today.getFullYear() + "-" + setTwinNum(today.getMonth() + 1) + "-" + setTwinNum(today.getDate());
+	
+	$('#start_day').datetimepicker({
+		useCurrent: false,  
+		format: "YYYY-MM-DD",
+		widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'bottom'
+        }
+	 });
+	
+    $('#end_day').datetimepicker({
+    	format: "YYYY-MM-DD"
+    });
+    
+    
+    var thisWeek = [];
+    
+    for(var i=0; i<7; i++) {
+		var resultDay = new Date(today.getFullYear(), (today.getMonth() + 1), today.getDate() + (i - today.getDay()));
+		var yyyy = resultDay.getFullYear();
+		var mm = Number(resultDay.getMonth()) + 1;
+		var dd = resultDay.getDate();
+     
+		thisWeek[i] = yyyy + '-' + setTwinNum(mm) + '-' + setTwinNum(dd);
+    }
+     
+    $('#start_day').val(todayStr);
+    $('#end_day').val(thisWeek[6]);
+    
+	$('#start_day').data("DateTimePicker").maxDate(today);
+    
+    $("#start_day").on("dp.change", function (e) {
+        $('#end_day').data("DateTimePicker").minDate(e.date);
+    });
+    $("#end_day").on("dp.change", function (e) {
+    	if(today > e.date) {
+	    	$('#start_day').data("DateTimePicker").maxDate(e.date);
+    	} else {
+    		$('#start_day').data("DateTimePicker").maxDate(today);
+    	}
+    });
+
+}
+
+function getPigPriceInit() {
+	var bodyObj = new Object();
+	bodyObj.FunctionID = "UP_CG_MOB_PRICE_PIG_S2";
+	commonAjaxForGetData(bodyObj, function(data) {
+		var getData = data.UP_CG_MOB_PRICE_PIG_S2[0];
+		$("#yesterDay").text("(" + (getData.P_PDATE == "null" ? "" :  getData.P_PDATE) + ")" );
+		$("#thisWeek").val(getData.P_AVR_PW).attr("readonly", true);
+		$("#beforeDay").val(getData.P_AVR_1W).attr("readonly", true);
+	});
+}
+
+function priceInformationGridInit() {
+	
+	$('#price_information_grid').footable({
+		"empty": "조회된 정보가 없습니다.",
+		"paging": {
+			"size": 6
+		},
+		"columns": [
+			{
+				title: '주간시작일',
+				name: 'DT_START',
+				style:{
+					"text-align": "center",
+					"width": 100
+				},
+				formatter: function(value, options, rowData) {
+					if(value != null) {
+						return makeDateFormat(value);
+					}
+	            }
+			} ,{
+				title: '주간종료일',
+				name: 'DT_END',
+				style:{
+					"text-align": "center",
+					"width": 100
+				},
+				formatter: function(value, options, rowData) {
+					if(value != null) {
+						return makeDateFormat(value);
+					}
+	            }
+			} ,{
+				title: '작업구분',
+				name: 'GB_WORK',
+				style:{
+					"text-align": "center",
+					"width": 100
+				},
+			}, {
+				title: '4주평균',
+				name: 'AVR_4W',
+				style:{
+					"text-align": "right",
+					"width": 130
+				},
+	            formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '일',
+				name: 'SUN',
+				style:{
+					"text-align": "right",
+					"width": 60
+				},
+	            formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '월',
+				name: 'MON',
+				style:{
+					"text-align": "right",
+					"width": 60
+				},
+	            formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '화',
+				name: 'TUE',
+				style:{
+					"text-align": "right",
+					"width": 60
+				},
+	            formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '수',
+				name: 'WED',
+				style:{
+					"text-align": "right",
+					"width": 60
+				},
+	            formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '목',
+				name: 'THU',
+				style:{
+					"text-align": "right",
+					"width": 60
+				},
+	            formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '금',
+				name: 'FRI',
+				style:{
+					"text-align": "right",
+					"width": 60
+				},
+	            formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}, {
+				title: '토',
+				name: 'SAT',
+				style:{
+					"text-align": "right",
+					"width": 60
+				},
+	            formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}
+			, {
+				title: '주간평균',
+				name: 'AVR_1W',
+				style:{
+					"text-align": "right",
+					"width": 130
+				},
+				formatter: function(value, options, rowData) {
+	                return addComma(value);
+	            }
+			}
+		],
+		"rows": []
+	});
+	
+	priceInformation.grid = FooTable.get('#price_information_grid');
+	
+}
+
+function creditSalesStatusForGetData() {
+	var returnObj = new Object();
+	returnObj.FunctionID = "UP_CG_MOB_PRICE_PIG_S";
+	returnObj.P_DT_START = $("#start_day").val().replace(/-/gi, '').trim();
+	returnObj.P_DT_END = $("#end_day").val().replace(/-/gi, '').trim();
+	
+	return returnObj;
+}
+
+function creditSalesStatusSearch(bodyObj) {
+	commonAjaxForGetData(bodyObj, function(data) {
+		priceInformation.data = data.UP_CG_MOB_PRICE_PIG_S;
+// 		for(var i in priceInformation.data) {
+// 			if(i % 3 != 1) {
+// 				delete priceInformation.data[i]["DT_START"];
+// 				delete priceInformation.data[i]["DT_END"];
+// 			}
+// 		}
+		priceInformation.grid.loadRows(priceInformation.data);
+// 		for(var i =0; i < $('#price_information_grid tbody tr').length; i++) {
+// 			if(i % 3 == 0) {
+// 				$($('#price_information_grid tbody tr')[i].children[0]).css("border-bottom", "hidden")
+// 				$($('#price_information_grid tbody tr')[i+1].children[0]).css("border-bottom", "hidden")
+// 				$($('#price_information_grid tbody tr')[i].children[1]).css("border-bottom", "hidden")
+// 				$($('#price_information_grid tbody tr')[i+1].children[1]).css("border-bottom", "hidden")
+// 			}
+// 		}
+		$("#loading").hide();
+	});
+}
+
+function priceInformationEventBind() {
+	$("#go_collection_status").click(function() {
+		location.href = "/sales/collection_status";
+	});
+
+	$("#go_menu").click(function() {
+		location.href = "/menu";
+	});
+	
+	$("#price_information_search").click(function() {
+		$("#loading").show();
+		creditSalesStatusSearch(creditSalesStatusForGetData())
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

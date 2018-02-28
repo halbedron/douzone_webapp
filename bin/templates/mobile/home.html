@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content" style="background-color: #f2fbff; height: -webkit-fill-available;">
+	<div class="container-fluid">
+		<div class="row" >
+			<img alt=""  th:src='@{/images/login.png}'  style="width: 100%;  margin-bottom: 30px;"/>
+		</div>
+		<div class="row"  style="background-color: #f2fbff; ">
+			<div class="col-xs-offset-2 col-xs-8">
+				<div class="form-horizontal">
+					<div class="form-group" >
+						<div class="input-group  input-group-lg">
+						  <span class="input-group-addon"  >
+						  	<i class="fa fa-building-o" aria-hidden="true"></i>
+						  </span>
+						  <input type="text" class="form-control" placeholder="Username"  value="DOUZONE"  readonly="readonly"/>
+						</div>
+					</div>
+					<div class="form-group" >
+						<div class="input-group  input-group-lg">
+						  <span class="input-group-addon"  >
+						  	<i class="fa fa-building-o" aria-hidden="true"></i>
+						  </span>
+						  <input type="text" class="form-control" placeholder="회사코드"  id="company_code" value="A000"/>
+						</div>
+					</div>
+					<div class="form-group" >
+						<div class="input-group  input-group-lg">
+						  <span class="input-group-addon"  >
+						  	<i class="fa fa-id-badge" aria-hidden="true"></i>
+						  </span>
+						  <input type="text" class="form-control" placeholder="그룹코드"  id="group_code"/>
+						</div>
+					</div>
+					<div class="form-group"  >
+						<div class="input-group  input-group-lg">
+						  <span class="input-group-addon"  >
+						  	<i class="fa fa-user-o" aria-hidden="true"></i>
+						  </span>
+						  <input type="text" class="form-control" placeholder="ID"  id="inputID" />
+						</div>
+					</div>
+					<div class="form-group" >
+						<div class="input-group  input-group-lg">
+						  <span class="input-group-addon"  >
+						  	<i class="fa fa-lock " aria-hidden="true"></i>
+						  </span>
+						  <input type="password" class="form-control" placeholder="PASSWORD"  id="inputPW" />
+						</div>
+					</div>
+					<div class="checkbox"  style="padding-top: 0; padding-bottom: 10px;">
+						<label>
+							<input type="checkbox"  id="remember" style="height: 30px; width: 20px;"/>
+							<span style="font-size: 12pt; padding-left: 10px;">그룹코드, 아이디 저장</span>
+						</label>
+					</div>
+					<div class="form-group" >
+						<button type="button"  class="btn  btn-lg btn-info col-xs-12"  id="btnLogin" >로그인</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row text-center">
+			<span class="text-warning"  style="display: none;" id="NoUserSpan"><small id="NoUserText">입력하신 사용자 정보가 존재하지 않습니다.</small></span>
+		</div>
+	</div>
+<script type="text/javascript">
+/*<![CDATA[*/
+var hom01 = {
+		isApp: null,
+		hostUrl: null,
+		headerObj: null,
+		apiTable: null,
+}
+$(document).ready(function() {
+	hom01.isApp = document.URL.indexOf("web");
+	$("#head_title").hide();
+	if(hom01.isApp < 0) {
+		location.href="app://callback;headerinfo;homeInitialise;";
+		sessionStorage.setItem("isApp", "mobile");
+	} else {
+		homeInitialise();
+		sessionStorage.setItem("isApp", "web");
+	}
+});
+
+function homeInitialise(data) {
+	inputFixHeight();
+	if(localStorage.getItem("cd_group") != null) {
+		$("#group_code").val(localStorage.getItem("cd_group"));
+	}
+	
+	if(localStorage.getItem("id") != null) {
+		$("#inputID").val(localStorage.getItem("id"));
+	}
+	
+	if(localStorage.getItem("rememberFlag") == "Y") {
+		$("#remember").prop('checked', true);
+	} else {
+		$("#remember").prop('checked', false);
+	}
+	getInfo(data);
+	homeEventBind();
+	$("#head_title").hide();
+}
+
+function inputFixHeight() {
+	var inputList = $("input");
+	for(var i in inputList) {
+		if(i != "inputList" && i.length == 1) {
+			var sapanHeght = $($($("input")[i]).parent()[0].children[0]).css("height");
+			$(inputList[i]).css("height", sapanHeght);
+		}
+	}
+}
+
+function getInfo(data) {
+	var info = null;
+	if(hom01.isApp < 0) {
+		info = JSON.parse(data);
+	}
+	$.get( "/api/getInfo", function( data ) {
+		hom01.headerObj = new Object();
+		hom01.headerObj.custom = "DARBY";
+		hom01.headerObj.product = "DARBY";
+		hom01.headerObj.language = "KR";
+		hom01.headerObj.session = "";
+		hom01.headerObj.push = "";
+		hom01.headerObj.certkey = "DARBY";
+		
+		if(hom01.isApp < 0) {
+			hom01.headerObj.os_type = info.os_type; //*
+			hom01.headerObj.os_ver = info.os_ver; //*
+			hom01.headerObj.product_ver = info.product_ver; //*
+			hom01.headerObj.device = info.device; //*
+			hom01.headerObj.device_model = info.device_model; //*
+		} else {
+			hom01.headerObj.os_type = "01"; //*
+			hom01.headerObj.os_ver = "3.5.6"; //*
+			hom01.headerObj.product_ver = "1.5.6"; //*
+			hom01.headerObj.device = "FDSFSFSDAFASF"; //*
+			hom01.headerObj.device_model = "G6"; //*
+		}
+		getUrl(hom01.headerObj);
+	});
+}
+
+function getUrl(header) {
+	$.get( "/api/getUrl?header=" + encodedJSON(header), function( data ) {
+		console.log(JSON.parse(data))
+		var response = JSON.parse(data);
+		if(response.resultCode == 1000) {
+			hom01.hostUrl = JSON.parse(data).result.List.CustomInfo[0].HostUrl.toString();
+			sessionStorage.setItem("hostUrl", hom01.hostUrl);
+			getApi(hom01.hostUrl);
+		} 
+	});
+}
+
+function getApi(hostUrl) {
+	$.get( "/api/getApi?hostUrl=" + hostUrl, function( data ) {
+		console.log(JSON.parse(data).result.List.Table)
+		hom01.apiTable = JSON.parse(data).result.List.Table;
+		sessionStorage.setItem("api", JSON.stringify(hom01.apiTable));
+	});
+}
+
+function getSession() {
+	var bodyObj = new Object();
+	bodyObj.server_key = "DARBY";
+	bodyObj.company = $("#company_code").val().trim();
+	bodyObj.group = $("#group_code").val().trim();
+	bodyObj.user = $("#inputID").val().trim();
+	bodyObj.pwd = $("#inputPW").val().trim();
+
+	var certUrl = "";
+	for(var i in  hom01.apiTable) {
+		if(hom01.apiTable[i].CD_API == "Cert") {
+			certUrl = hom01.hostUrl + "/" + hom01.apiTable[i].NM_API;
+		} 
+	}
+	$.get( "/api/getSession?certUrl=" + certUrl + "&body=" + encodedJSON(bodyObj), function( data ) {
+		if(JSON.parse(data).resultCode == "1000") {
+			$("#NoUserSpan").hide();
+			hom01.headerObj.session = JSON.parse(data).result;
+			getUserInfo();
+		} else {
+			$("#NoUserText").text(JSON.parse(data).resultMessage);
+			$("#NoUserSpan").show();
+			bootalert(JSON.parse(data).resultMessage);
+		}
+	});
+}
+
+function getUserInfo() {
+	getGroupFlag();
+	var bodyObj = new Object();
+	bodyObj.FunctionID = "UP_MB_COM_BROWSER_USERINFO_S"; //프로시저 명
+	//프로시저 파라미터
+	bodyObj.P_CD_COMPANY = $("#company_code").val().trim();
+	bodyObj.P_CD_GROUP = $("#group_code").val().trim();
+	bodyObj.P_ID_USER = $("#inputID").val().trim();
+
+	var userUrl = "";
+	for(var i in  hom01.apiTable) {
+		if(hom01.apiTable[i].CD_API == "RequestNtx") {
+			userUrl = hom01.hostUrl + "/" + hom01.apiTable[i].NM_API;
+		}
+	}
+	
+	sessionStorage.setItem("headerInfo", JSON.stringify(hom01.headerObj));
+	$.get( "/api/getUserInfo?userUrl=" + userUrl + "&header=" + encodedJSON(hom01.headerObj) + "&body=" + encodedJSON(bodyObj), function( data ) {
+		if(JSON.parse(data).resultCode == "1000") {
+			sessionStorage.setItem("userInfo", JSON.stringify(JSON.parse(data).result.List.UP_MB_COM_BROWSER_USERINFO_S[0]));
+			if($("input[type='checkbox']")[0].checked == true) {
+				localStorage.setItem("cd_group", $("#group_code").val().trim());
+				localStorage.setItem("id", $("#inputID").val().trim());
+				localStorage.setItem("rememberFlag", "Y");
+			} else {
+				localStorage.removeItem("cd_group");
+				localStorage.removeItem("id");
+				localStorage.setItem("rememberFlag", "N");
+			}
+			location.href="/menu"
+		}else {
+			$("#NoUserText").show();
+		}
+	}).fail(function() {
+		$("#NoUserText").show();
+	});
+}
+
+function getGroupFlag() {
+	var bodyObj = new Object();
+	bodyObj.FunctionID = "UP_CG_MOB_YESNO_S";
+	bodyObj.P_CD_GROUP = $("#group_code").val().trim();
+	
+	var userUrl = "";
+	for(var i in  hom01.apiTable) {
+		if(hom01.apiTable[i].CD_API == "RequestNtx") {
+			userUrl = hom01.hostUrl + "/" + hom01.apiTable[i].NM_API;
+		}
+	}
+	
+	$.get( "/api/getRest?restUrl=" + userUrl + "&header=" + encodedJSON(hom01.headerObj) + "&body=" + encodedJSON(bodyObj), function( data ) {
+		if(JSON.parse(data).resultCode == "1000") {
+			sessionStorage.setItem("groupFlag", JSON.parse(data).result.List.UP_CG_MOB_YESNO_S[0].P_YESNO);
+		}else {
+			sessionStorage.setItem("groupFlag", data);
+		}
+	}).fail(function() {
+			console.log(data);
+	});
+}
+
+function homeEventBind() {
+	$("#btnLogin").click(function() {
+		getSession();
+	});
+}
+
+/*]]>*/
+</script>
+</div>
+</html>

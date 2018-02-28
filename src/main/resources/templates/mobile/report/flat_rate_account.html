@@ -1,0 +1,215 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content">
+	<div class="container-fluid" style="padding-top: 25%;">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<label for="infoDays" class="col-xs-2 col-sm-4 control-label padTop4 text-muted" style="padding-right: 0px">기간</label>
+						<div class="col-xs-10 col-sm-8">
+							 <div class='input-group date  input-daterange' >
+					            <div class='input-group date' >
+					                <input type='text' class="form-control"   id="start_day"/>
+					            </div>
+						            <span class="input-group-addon">-</span>
+					             <div class='input-group date' >
+					                <input type='text' class="form-control"  id="end_day" />
+					            </div>
+				            </div>
+			            </div>
+					</div>
+					<div class="form-group">
+						<label for="farm" class="col-xs-3 col-sm-2 control-label padTop4  text-muted">거래처</label>
+						<div class="col-xs-9 col-sm-9">
+							<div class='input-group' >
+								<input type="text"  class="form-control" id="farm"/>
+								<span class="input-group-btn">
+									<button type="button"  class="btn btn-default" id="farm_search" data-toggle="modal" data-target="#search_popup"  >
+										<i class="fa fa-search" aria-hidden="true"></i>&nbsp;검색
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+				</form>
+				<div class="row text-center" style="padding-bottom: 10px;">
+					<button type="button" class="btn btn-info"  id="bill_search">확인</button>
+					<button type="button" class="btn btn-info"  data-toggle="modal" data-target="#accountOutput" id="output_img">이미지 저장</button>
+				</div>
+				<div id="loading" style="display: none;">
+					<img id="loading-image"  th:src='@{/images/ajax-loader.gif}'  alt="Loading..."  style="width: 100%; height:20px;  margin-bottom: 30px;"/>
+				</div>
+				<div id="accountCanvas" >
+					<div th:replace="/mobile/report/account_form:: accountForm" ></div>
+				</div>
+				<div class="modal fade"  id="accountOutput">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title" >청구서(정액)</h4>
+				      </div>
+				      <div class="modal-body"  style="height: auto;">
+				        <img id="supply_Img"  style="width: 100%"/>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-info" data-dismiss="modal">닫기</button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				  </div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+				<div class="modal fade"  id="search_popup">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				        <h4 class="modal-title">고객 정보 검색</h4>
+				      </div>
+				      <div class="modal-body" >
+				        <div th:replace="/mobile/breedingPig/partner_search_popup:: partnerSearch" ></div>
+				      </div>
+				      <div class="modal-footer">
+				        <button type="button" class="btn btn-info" id="modal_confirm">확인</button>
+				        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+				      </div>
+				    </div><!-- /.modal-content -->
+				  </div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+			</div>
+		</div>
+	</div>
+<style>
+#accountCanvas {
+ 	padding: 10px; 
+ 	border: 1px solid #d3d3d3;
+	width: max-content; 
+	font-size: 13pt; 
+	margin-bottom: 20px;
+}
+</style>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var account = {
+		
+}
+
+$(document).ready(function() {
+	accountInit();
+});
+
+function accountInit() {
+	setTitle("청구서(정액)");
+	$("#start_day, #end_day").css("height", $("#farm_search").css("height"));
+	$("#farm").css("height", $("#farm_search").css("height"));
+	accountControles();
+	accountFormInit();
+	$("#accountCanvas").hide();
+	partnerInit();
+	accountEventBind();
+}
+
+function accountControles() {
+	var today = new Date();
+	var todayStr = today.getFullYear() + "-" + setTwinNum(today.getMonth() + 1) + "-" + setTwinNum(today.getDate());
+	$('#start_day').datetimepicker({
+		useCurrent: false,  
+		format: "YYYY-MM-DD",
+		widgetPositioning: {
+            horizontal: 'left',
+            vertical: 'bottom'
+        }
+	 });
+	
+    $('#end_day').datetimepicker({
+    	format: "YYYY-MM-DD"
+    });
+    
+    $('#start_day').val(todayStr);
+    $('#end_day').val(todayStr);
+    
+    $("#start_day").on("dp.change", function (e) {
+        $('#end_day').data("DateTimePicker").minDate(e.date);
+    });
+    $("#end_day").on("dp.change", function (e) {
+        $('#start_day').data("DateTimePicker").maxDate(e.date);
+    });
+
+}
+
+function accountForValidation() {
+	if($("#farm").val().trim() == "") {
+		bootalert("거래처를 검색 후 조회 해 주십시오.");
+		return false;
+	}
+	
+	if($("#farm").val().trim() != "" && $("#farm").attr("name") == null) {
+		bootalert("[ 거래처 명 : " + $("#farm").val() + " ]로 검색을 원하신다면 농장 조회 후 선택하여 조회하여 주십시오.");
+		return false;
+	}
+	
+	return true;
+}
+
+function accountForGetData() {
+	var returnObj = new Object();
+	returnObj.FunctionID = "UP_CG_MOB_CHARGE_RPT";
+	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
+	returnObj.P_DT_1 = $("#start_day").val().replace(/-/gi, '').trim();
+	returnObj.P_DT_2 = $("#end_day").val().replace(/-/gi, '').trim();
+	returnObj.p_cd_partner = $("#farm").attr("name");
+	
+	return returnObj;
+}
+
+function accountEventBind() {
+	$("#search_popup").on('shown.bs.modal', function () {
+		$("#ln_partner").val($("#farm").val());
+	});
+	
+	$("#modal_confirm").click(function() {
+		if($('input:radio[name="selectRadio"]:checked').val() == undefined) {
+			bootalert("선택 할 거래처를 선택해 주세요.");
+			return false
+		} else {
+			if($('input:radio[name="selectRadio"]:checked').val() != undefined) {
+				var index = $('input:radio[name="selectRadio"]:checked').val()*1;
+				var rowData = partner.grid.rows.all[index].value
+				$("#farm").val(rowData.NM_CEO + "[" + rowData.LN_PARTNER + "]");
+				$("#farm").attr("name", "");
+				$("#farm").attr("name", rowData.CD_PARTNER);
+			}
+			$("#search_popup").modal('hide');
+		}
+	});
+	
+	$("#bill_search").click(function() {
+		if($("#accountCanvas").css("display") == "block") {
+			$("#accountCanvas").hide();
+		}
+		$("#loading").show();
+		if(accountForValidation()) {
+			ajaxForAccountForm(accountForGetData());
+		}
+		
+	});
+	
+	$("#output_img").click(function() {
+		if($("#accountCanvas").css("display") == "none") {
+			BootstrapDialog.alert( '검색 후 출력 가능합니다.');
+			return false;
+		}
+		
+		if(accountForm.src == null || accountForm.src == "") {
+			BootstrapDialog.alert( '서버에서 이미지를 받아오는 중입니다. 잠시 후 다시 시도 해주세요.');
+			return false;
+		}
+		
+		$("#supply_Img").attr('src', accountForm.src);
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

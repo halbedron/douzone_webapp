@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+	layout:decorator="layout/default" lang="ko">
+<div  layout:fragment="content" >
+	<div class="container-fluid" style="padding-top: 100px;">
+		<div class="row" >
+			<div class="col-xs-8 col-xs-offset-2">
+				<nav class="navbar navbar-default">
+				  <div class="container-fluid">
+				    <div class="navbar-header">
+				      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#breedingPig_shipping">
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span> 
+				      </button>
+				      <a class="navbar-brand" href="#">종돈 출하</a>
+				    </div>
+				    <div class="collapse navbar-collapse" id="breedingPig_shipping">
+				      <ul class="nav navbar-nav">
+				        <li><a href="/breedingPig/shipping_plan" >출하계획</a></li>
+<!-- 				        <li><a href="/breedingPig/shipping_regist" >입식,출하등록</a></li>  -->
+<!-- 				        <li><a  href="/breedingPig/sign_regist" >서명등록</a></li>  -->
+				        <li id="menu_li_eartag"><a  href="/breedingPig/earTagged_check" >이각확인</a></li> 
+				      </ul>
+				    </div>
+				  </div>
+				</nav>
+				<nav class="navbar navbar-default"  id="menu_nav_sales">
+				  <div class="container-fluid">
+				    <div class="navbar-header">
+				      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#salesManagement">
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span> 
+				      </button>
+				      <a class="navbar-brand" href="#">영업 관리</a>
+				    </div>
+				    <div class="collapse navbar-collapse"  id="salesManagement">
+				      <ul class="nav navbar-nav" id="menu_ul_sales" >
+				        <li  id="menu_li_partner"><a href="/sales/partner" >고객정보</a></li>
+				        <li><a href="/sales/shipping_related">출하관련</a></li> 
+				        <li><a href="/sales/dealing_by_customer">거래처별거래내역</a></li> 
+				        <li><a href="/sales/claim_management">클레임관리</a></li> 
+				        <li><a href="/sales/credit_sales_status">외상채권현황</a></li> 
+				        <li><a href="/sales/accounts_receivable_status">미수현황</a></li> 
+				        <li><a href="/sales/collection_status">수금현황</a></li> 
+				        <li><a href="/sales/pig_farm_price_information">돈가시세정보</a></li> 
+				      </ul>
+				    </div>
+				  </div>
+				</nav>
+				<nav class="navbar navbar-default" id="menu_nav_report">
+				  <div class="container-fluid">
+				    <div class="navbar-header">
+				      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#report">
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span>
+				        <span class="icon-bar"></span> 
+				      </button>
+				      <a class="navbar-brand" href="#">보고서</a>
+				    </div>
+				    <div class="collapse navbar-collapse" id="report">
+				      <ul class="nav navbar-nav">
+				        <li><a href="/report/flat_rate_account">청구서(정액)</a></li> 
+				        <li><a href="/report/performance_to_plan">계획대비실적</a></li> 
+				      </ul>
+				    </div>
+				  </div>
+				</nav>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-8 col-xs-offset-2">
+				<button class="btn btn-lg navbar navbar-default col-xs-12" id="logout_btn">로그아웃</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-8 col-xs-offset-2">
+				<button class="btn btn-lg navbar navbar-default col-xs-12" id="bluetoothdevicelist">프린터 연결</button>
+			</div>
+		</div>
+	</div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+$(document).ready(function() {
+	menuListInitialize();
+});
+
+function menuListInitialize() {
+	setTitle("메뉴");
+	$(".nav_trigger").hide();
+	if(sessionStorage.getItem("groupFlag") == "1") {
+		 $("#menu_li_eartag, #menu_nav_report").hide();
+		 $("#menu_ul_sales li").hide();
+		 $("#menu_li_partner").show();
+	 }
+	menuListEventBind();
+}
+
+function menuListEventBind() {
+	$(".navbar-toggle").click(function() {
+		var navDivList = ["#breedingPig_shipping", "#salesManagement", "#report"];
+		var target = $(this).attr("data-target");
+		var index = navDivList.indexOf(target);
+		navDivList.splice(index, 1);
+		
+		for(var i in navDivList) {
+			$(navDivList[i]).removeClass("in");
+		}
+	});
+	
+	$("#logout_btn").click(function() {
+		sessionStorage.clear();
+		if(sessionStorage.getItem("isApp") == "web") {
+			location.href="/home?web=web";
+		} else {
+			location.href="/home";
+		}
+	});
+	
+	$("#bluetoothdevicelist").click(function() {
+		location.href="app://cmd;bluetoothdevicelist";
+	});
+}
+/*]]>*/
+</script>
+</div>
+</html>

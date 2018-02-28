@@ -1,0 +1,27 @@
+body {
+	font-size: 15pt  !important;
+}
+
+.padTop4 {
+	padding-top: 4px;
+}
+
+.nav li {
+	height: 50px;
+}
+
+.nav li a {
+	font-size: 10pt  !important;
+}
+
+#report, #shippingManagement {
+	overflow: hidden;
+}
+
+.mar_left-15 {
+	margin-left: -15px;
+}
+
+.pad-left-0 {
+	padding-left: 0;
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"  lang="ko" >
+<head th:fragment="configFragment">
+<meta name="viewport"  content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=no"  charset="UTF-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- <meta http-equiv="Content-Type" content="text/html; charset=euc-kr" /> -->
+<!-- 공통으로 쓰이는 css파일을넣는다.-->
+<link rel='stylesheet'  type="text/css"  th:href='@{/webjars/bootstrap/3.3.6/css/bootstrap.css}' />
+<link rel='stylesheet'  type="text/css"  th:href='@{/webjars/bootstrap/3.3.6/css/bootstrap-theme.css}' />
+<!-- 사용자 CSS 영역이 들어감 -->
+<link rel='stylesheet'  type="text/css"  th:href='@{/css/commoncss.css}' />
+<!-- 사용자 스크립트 영역이 들어감 -->
+<script th:src="@{/js/commonjs.js}"></script> 
+<script th:src="@{/js/publicJs/commonApiJs.js}"></script> 
+ 
+<!-- 공통으로 쓰이는 js파일을넣는다.-->
+<script src="http://code.jquery.com/jquery-latest.js"></script> 
+<script th:src="@{/webjars/bootstrap/3.3.6/js/bootstrap.min.js}"></script> 
+<script th:src="@{/js/html2canvas.js}"></script>
+
+<link rel='stylesheet'  type="text/css"  href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/css/bootstrap-dialog.min.css' />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.7/js/bootstrap-dialog.min.js"></script>
+
+<!-- icon-font -->
+<script src="https://use.fontawesome.com/bbddce3010.js"></script>
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/font-awesome-4.7.0/css/font-awesome.min.css}' />
+<!-- Bootstrap 3 Datepicker -->
+<script th:src="@{/js/moment/moment.js}"></script> 
+<script th:src="@{/js/moment/locale/ko.js}"></script> 
+<script th:src="@{/js/moment/bootstrap-datetimepicker.min.js}"></script> 
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/moment/bootstrap-datetimepicker.min.css}' />
+
+<!-- footable-components -->
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/footable-components.latest/css/footable.core.bootstrap.css}' />
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/footable-components.latest/css/footable.editing.css}' />
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/footable-components.latest/css/footable.paging.css}' />
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/footable-components.latest/css/footable.sorting.css}' />
+<script th:src="@{/js/footable-components.latest/js/footable.core.js}"></script>
+<script th:src="@{/js/footable-components.latest/js/footable.editing.js}"></script>
+<script th:src="@{/js/footable-components.latest/js/footable.paging.js}"></script>
+<script th:src="@{/js/footable-components.latest/js/footable.sorting.js}"></script>
+<script th:src="@{/js/footable-components.latest/js/footable.state.js}"></script>
+
+<!-- Bootstrap-selectpicker -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" />
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+<!-- tui grid -->
+<script th:src="@{/js/tuiGrid/js/underscore-min.js}" ></script> 
+<script th:src="@{/js/tuiGrid/js/backbone.js}" ></script> 
+<script type="text/javascript" src="https://cdn.rawgit.com/nhnent/tui.code-snippet/v1.2.5/dist/tui-code-snippet.js"></script>
+<script th:src="@{/js/tuiGrid/js/raphael-min.js}" ></script> 
+<script th:src="@{/js/tuiGrid/js/tui-grid.min.js}" ></script> 
+<script th:src="@{/js/tuiGrid/js/tui-pagination.js}" ></script> 
+<script th:src="@{/js/tuiGrid/js/tui-grid.comb.min.js}" ></script> 
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/tuiGrid/css/tui-grid.css}'/>
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/tuiGrid/css/tui-pagination.css}'/>
+<script th:src="@{/js/tuiGrid/js/tui-chart.js}" ></script> 
+<link rel='stylesheet'  type="text/css"  th:href='@{/js/tuiGrid/css/tui-chart.css}'/>
+
+<script th:src="@{/js/signature_pad.min.js}"></script> 
+
+<link rel='stylesheet'  type="text/css"  th:href='@{/css/custom-style.css}'/>
+
+</head>
+</html>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="jui-1.3.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.webjars.bower/jui/1.3.3/abe091bc0a1a06e999cd5e35b2607860adcb7ed7/jui-1.3.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.webjars.bower/jui/1.3.3/b04f3ee8f5e43fa3b162981b50bb72fe1acabb33/jui-1.3.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
