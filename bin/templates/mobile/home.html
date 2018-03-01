@@ -128,7 +128,6 @@ function getInfo(data) {
 		hom01.headerObj.session = "";
 		hom01.headerObj.push = "";
 		hom01.headerObj.certkey = "DARBY";
-		
 		if(hom01.isApp < 0) {
 			hom01.headerObj.os_type = info.os_type; //*
 			hom01.headerObj.os_ver = info.os_ver; //*
@@ -160,7 +159,6 @@ function getUrl(header) {
 
 function getApi(hostUrl) {
 	$.get( "/api/getApi?hostUrl=" + hostUrl, function( data ) {
-		console.log(JSON.parse(data).result.List.Table)
 		hom01.apiTable = JSON.parse(data).result.List.Table;
 		sessionStorage.setItem("api", JSON.stringify(hom01.apiTable));
 	});
@@ -180,6 +178,7 @@ function getSession() {
 			certUrl = hom01.hostUrl + "/" + hom01.apiTable[i].NM_API;
 		} 
 	}
+	
 	$.get( "/api/getSession?certUrl=" + certUrl + "&body=" + encodedJSON(bodyObj), function( data ) {
 		if(JSON.parse(data).resultCode == "1000") {
 			$("#NoUserSpan").hide();
@@ -192,6 +191,7 @@ function getSession() {
 		}
 	});
 }
+
 
 function getUserInfo() {
 	getGroupFlag();

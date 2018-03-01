@@ -52,6 +52,7 @@ public class MaUserController {
 			} else {
 				url = urlParam;
 			}
+			System.out.println("url" + url);
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
