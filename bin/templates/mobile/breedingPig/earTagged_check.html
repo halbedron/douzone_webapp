@@ -115,16 +115,16 @@ function inputFixHeight() {
  * Date Controls 초기화
  */
 function referenceDatePickerInitialize() {
-	$("#referenceDate").datetimepicker({
-		useCurrent: true, 
-		format: "YYYY-MM-DD"
-	 });
+	   $("#referenceDate").datetimepicker({
+	      useCurrent: true, 
+	      format: "YYYY-MM-DD"
+	    });
+	   
+	   var today = new Date();
+	   todayStr = today.getFullYear() + "-" + setTwinNum(today.getMonth()+1) + "-" + setTwinNum(today.getDate());
+	   $("#referenceDate").val(todayStr);
+	}
 	
-	var today = new Date();
-	todayStr = today.getFullYear() + "-" + setTwinNum(today.getMonth()+1) + "-" + today.getDate();
-	$("#referenceDate").val(todayStr);
-}
-
 /**
  * 필수 조건 확인
  */
@@ -217,6 +217,9 @@ function earTagGridInitalize() {
 function earTaggedEventbind() {
 	$("#search_popup").on('shown.bs.modal', function () {
 		$("#ln_partner").val($("#farm").val());
+		if($("#ln_partner").val().trim() != null && $("#ln_partner").val().trim() != "") {
+			partnerGetData();
+		}
 	});
 	
 	$("#modal_confirm").click(function() {
