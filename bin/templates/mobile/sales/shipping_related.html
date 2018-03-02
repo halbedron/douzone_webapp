@@ -258,6 +258,9 @@ function shippingPerformanceGridInit() {
 function shippingPerformanceEventBind() {
 	$("#search_popup").on('shown.bs.modal', function () {
 		$("#ln_partner").val($("#farm").val());
+		if($("#ln_partner").val().trim() != null && $("#ln_partner").val().trim() != "") {
+			partnerGetData();
+		}
 	});
 	
 	$("#modal_confirm").click(function() {
