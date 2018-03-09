@@ -207,19 +207,25 @@ function commonSelectInit(cd_field, selector, select_callback, option_0) {
 
 function addComma(val) {
 	var value = val.trim();
-	var len, point, str; 
+	var len, point, str, nnum; 
     if(value != "" && value != null) {
+    	if(value.indexOf("-") == -1){
+    		nnum = "";
+    	}else{
+    		value = value.replace("-","");
+    		nnum = "-";
+    	}
 	    	if(value.indexOf(".") ==  -1) {
 	    		point = value.length % 3 ;
 	    		len = value.length; 
-	    		str = value.substring(0, point); 
+	    		str = value.substring(0, point);
 	    		
 	    		while (point < len) { 
 	    			if (str != "") str += ","; 
 	    			str += value.substring(point, point + 3); 
 	    			point += 3; 
 	    		} 
-	    		return str;
+	    		return nnum + str;
 	    	} else {
 	    		var valueList = value.split(".");
 	    		point = valueList[0].length % 3 ;
@@ -231,7 +237,7 @@ function addComma(val) {
 	    			str += valueList[0].substring(point, point + 3); 
 	    			point += 3; 
 	    		} 
-	    		return str + "." + valueList[1];
+	    		return nnum + str + "." + valueList[1];
 	    	}
     }
     
