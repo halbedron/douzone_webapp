@@ -98,7 +98,38 @@ var creditSalesStatus = {
 		grid: null,
 		data: null,
 }
+
+var creditSalesStatusGridData = new function() {
+	this.ampev = new Array();
+	this.amtjan = new Array();
 	
+	this.getAmpev = function (){
+		return this.ampev[this.ampev.length-1];
+	}
+	
+	this.setAmpev = function (num){
+		if(num == "" || num == null){
+			this.ampev.push(this.amtjan[this.amtjan.length-1]);
+		}else{
+			this.ampev.push(num);
+		}
+	}
+	
+	this.getAmtjan = function (num1, num2){
+		var val = this.ampev[this.ampev.length-1]*1 + num1*1 - num2*1;
+		return val;
+	}
+	
+	this.setAmtjan = function (num){
+		this.amtjan.push(num);
+	}
+	
+	this.init = function (){
+		this.ampev = [];
+		this.amtjan = [];
+	}
+}
+
 $(document).ready(function() {
 	creditSalesStatusInit();
 });
@@ -210,7 +241,6 @@ function creditSalesStatusSearch(bodyObj) {
 }
 
 function creditSalesStatusGridInit() {
-	
 	$('#credit_sales_status_grid').footable({
 		"empty": "조회된 정보가 없습니다.",
 		"paging": {
@@ -240,6 +270,8 @@ function creditSalesStatusGridInit() {
 					"text-align": "right"
 				},
 				formatter: function(value, options, rowData) {
+					creditSalesStatusGridData.setAmpev(value);
+					value = creditSalesStatusGridData.getAmpev()+"";
 	                return addComma(value);
 	            }
 			}, {
@@ -285,7 +317,10 @@ function creditSalesStatusGridInit() {
 					"text-align": "right"
 				},
 				formatter: function(value, options, rowData) {
-	                return addComma(value);
+					value = creditSalesStatusGridData.getAmtjan(rowData.AMT_OUT,rowData.AMT_CREDIT);
+					creditSalesStatusGridData.setAmtjan(value);
+					
+	                return addComma(value+"");
 	            }
 			}
 		],
@@ -332,6 +367,7 @@ function creditSalesStatusEventBind() {
 	
 	$("#credit_search").click(function() {
 		if(creditSalesStatusSearchForValidation()) {
+			creditSalesStatusGridData.init();
 			$("#loading").show();
 			creditSalesStatusSearch(creditSalesStatusForGetData());
 		}

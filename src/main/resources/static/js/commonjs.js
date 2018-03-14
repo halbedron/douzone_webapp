@@ -243,6 +243,7 @@ function addComma(val) {
     
 }
 
+
 function commonAjaxForGetData(bodyObj, callBackFunction) {
 	$.get( "/api/getRest?restUrl=" + getUrl("RequestNtx") + "&header=" + encodedJSON(headerInfo()) + "&body=" + encodedJSON(bodyObj), function( data ) {
 		if(JSON.parse(data).resultCode == "2000") {
