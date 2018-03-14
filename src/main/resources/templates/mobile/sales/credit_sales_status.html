@@ -99,40 +99,17 @@ var creditSalesStatus = {
 		data: null,
 }
 
-var creditSalesStatusGridData = new function() {
-	this.ampev = new Array();
-	this.amtjan = new Array();
-	
-	this.getAmpev = function (){
-		return this.ampev[this.ampev.length-1];
-	}
-	
-	this.setAmpev = function (num){
-		if(num == "" || num == null){
-			this.ampev.push(this.amtjan[this.amtjan.length-1]);
-		}else{
-			this.ampev.push(num);
-		}
-	}
-	
-	this.getAmtjan = function (num1, num2){
-		var val = this.ampev[this.ampev.length-1]*1 + num1*1 - num2*1;
-		return val;
-	}
-	
-	this.setAmtjan = function (num){
-		this.amtjan.push(num);
-	}
-	
-	this.init = function (){
-		this.ampev = [];
-		this.amtjan = [];
-	}
-}
-
 $(document).ready(function() {
 	creditSalesStatusInit();
 });
+
+function creditSalesStatusGridData(){
+	for(var i = 1 ; i < creditSalesStatus.data.length ; i ++){
+		creditSalesStatus.data[i].AM_PREV = creditSalesStatus.data[i-1].AMT_JAN;
+			
+		creditSalesStatus.data[i].AMT_JAN = creditSalesStatus.data[i].AM_PREV*1 + creditSalesStatus.data[i].AMT_OUT*1 - creditSalesStatus.data[i].AMT_CREDIT*1;
+		}
+}
 
 function creditSalesStatusInit() {
 	$("#farm_search").css("height", $("#farm").css("height"));
@@ -235,6 +212,7 @@ function creditSalesStatusForGetData() {
 function creditSalesStatusSearch(bodyObj) {
 	commonAjaxForGetData(bodyObj, function(data) {
 		creditSalesStatus.data = data.UP_CG_MOB_RECEIVALE_S;
+		creditSalesStatusGridData();
 		creditSalesStatus.grid.loadRows(creditSalesStatus.data);
 		$("#loading").hide();
 	});
@@ -270,8 +248,6 @@ function creditSalesStatusGridInit() {
 					"text-align": "right"
 				},
 				formatter: function(value, options, rowData) {
-					creditSalesStatusGridData.setAmpev(value);
-					value = creditSalesStatusGridData.getAmpev()+"";
 	                return addComma(value);
 	            }
 			}, {
@@ -317,10 +293,7 @@ function creditSalesStatusGridInit() {
 					"text-align": "right"
 				},
 				formatter: function(value, options, rowData) {
-					value = creditSalesStatusGridData.getAmtjan(rowData.AMT_OUT,rowData.AMT_CREDIT);
-					creditSalesStatusGridData.setAmtjan(value);
-					
-	                return addComma(value+"");
+	                return addComma(value);
 	            }
 			}
 		],
@@ -367,7 +340,6 @@ function creditSalesStatusEventBind() {
 	
 	$("#credit_search").click(function() {
 		if(creditSalesStatusSearchForValidation()) {
-			creditSalesStatusGridData.init();
 			$("#loading").show();
 			creditSalesStatusSearch(creditSalesStatusForGetData());
 		}
