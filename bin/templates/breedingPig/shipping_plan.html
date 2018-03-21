@@ -45,11 +45,6 @@ var shippingPlan = {
 }
 $(document).ready(function() {
 	shippingPlanInitialize();
-	 if (self.name != 'reload') {
-         self.name = 'reload';
-         self.location.reload(true);
-     }
-     else self.name = ''; 
 });
 
 function shippingPlanInitialize() {
@@ -92,7 +87,7 @@ function shippingPlanGetDataByAjax(bodyObj) {
 }
 
 /* 그리드 초기화 */
-function shippingPlangridInitialize() {
+function shippingPlangridInitialize(gridDataSource) {
 	$('#shipping_plan_grid').footable({
 		"empty": "조회된 정보가 없습니다.",
 		"paging": {
