@@ -44,11 +44,11 @@ var shippingPlan = {
 		
 }
 $(document).ready(function() {
+	location.reload();
 	shippingPlanInitialize();
 });
 
 function shippingPlanInitialize() {
-	location.reload();
 	$("#start_date").css("height", $("#shipping_plan_confirm").css("height"));
 	setTitle("출하 계획");
 	datePickerInitialize();
