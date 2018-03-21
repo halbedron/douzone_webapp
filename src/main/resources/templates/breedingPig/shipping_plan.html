@@ -44,7 +44,6 @@ var shippingPlan = {
 		
 }
 $(document).ready(function() {
-	location.reload();
 	shippingPlanInitialize();
 });
 
@@ -54,6 +53,7 @@ function shippingPlanInitialize() {
 	datePickerInitialize();
 	shippingPlangridInitialize();
 	setTimeout(function () {
+		location.reload();
 		shippingPlanGetDataByAjax(shippingPlanGetData());
 	}, 300);
 	shippingPlanEventBind();
