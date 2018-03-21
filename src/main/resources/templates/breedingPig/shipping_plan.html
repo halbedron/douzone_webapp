@@ -44,12 +44,12 @@ var shippingPlan = {
 		
 }
 $(document).ready(function() {
+	shippingPlanInitialize();
 	 if (self.name != 'reload') {
          self.name = 'reload';
          self.location.reload(true);
      }
      else self.name = ''; 
-	shippingPlanInitialize();
 });
 
 function shippingPlanInitialize() {
