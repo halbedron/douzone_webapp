@@ -66,7 +66,7 @@ function datePickerInitialize() {
 }
 // 데이터 받기 위한 parameter 생성
 function shippingPlanGetData() {
-	var returnObj = {};
+	var returnObj = new Object();
 	returnObj.FunctionID = "UP_CG_MOB_SHIP_PLAN_S";
 	returnObj.P_CD_COMPANY = userInfo().CD_COMPANY;
 	returnObj.P_DT_PLAN = $("#start_date").val().replace( /-/gi, '');
@@ -186,8 +186,7 @@ function shippingPlanEventBind() {
 	/* 출하 일자의 확인 클릭 이벤트 */
 	$("#shipping_plan_confirm").click(function() {
 		if($("#start_date").val() != "") {
-			var param = shippingPlanGetData();
-			shippingPlanGetDataByAjax(param);
+			shippingPlanGetDataByAjax(shippingPlanGetData());
 		} else {
 			bootalert("날짜를 입력해 주십시오.");
 		}
