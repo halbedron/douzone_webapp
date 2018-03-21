@@ -81,7 +81,7 @@ function shippingPlanGetDataByAjax(bodyObj) {
 		shippingPlan.gridData = data.UP_CG_MOB_SHIP_PLAN_S;
 		for(var i in shippingPlan.gridData) {
 			shippingPlan.gridData[i].index = Num(i);
-			alert(Num(i));
+			alert(shippingPlan.gridData.QTY_SALE);
 		}
 		shippingPlan.grid.loadRows(shippingPlan.gridData);
 	});
