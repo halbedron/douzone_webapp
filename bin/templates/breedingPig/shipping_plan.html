@@ -48,6 +48,7 @@ $(document).ready(function() {
 });
 
 function shippingPlanInitialize() {
+	location.reload();
 	$("#start_date").css("height", $("#shipping_plan_confirm").css("height"));
 	setTitle("출하 계획");
 	datePickerInitialize();
@@ -88,7 +89,6 @@ function shippingPlanGetDataByAjax(bodyObj) {
 
 /* 그리드 초기화 */
 function shippingPlangridInitialize(gridDataSource) {
-	location.reload();
 	$('#shipping_plan_grid').footable({
 		"empty": "조회된 정보가 없습니다.",
 		"paging": {
