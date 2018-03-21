@@ -52,10 +52,10 @@ function shippingPlanInitialize() {
 	setTitle("출하 계획");
 	datePickerInitialize();
 	shippingPlangridInitialize();
+	shippingPlanEventBind();
 	setTimeout(function () {
 		shippingPlanGetDataByAjax(shippingPlanGetData());
-	}, 300);
-	shippingPlanEventBind();
+	}, 100);
 }
 
 // 데이터 피커 이니셜라이즈
@@ -81,8 +81,6 @@ function shippingPlanGetDataByAjax(bodyObj) {
 		shippingPlan.gridData = data.UP_CG_MOB_SHIP_PLAN_S;
 		for(var i in shippingPlan.gridData) {
 			shippingPlan.gridData[i].index = Num(i);
-			alert(shippingPlan.gridData.length);
-			alert(shippingPlan.gridData[0].QTY_SALE);
 		}
 		shippingPlan.grid.loadRows(shippingPlan.gridData);
 	});
