@@ -268,9 +268,7 @@ function shippingRegistCallRestApi(bodyObj) {
 					 label: '닫기',
 					 action: function() {
 						 var shippingDate = shippingRegist.rowData.DT_SHIP_PLAN.substring(0,4)+"-"+shippingRegist.rowData.DT_SHIP_PLAN.substring(4,6)+"-"+shippingRegist.rowData.DT_SHIP_PLAN.substring(6,8);
-							setTimeout(function () {
 								 location.href = "/breedingPig/shipping_plan?date=" + shippingDate;
-							}, 0);
 					 }
 				 }]
 			 });
