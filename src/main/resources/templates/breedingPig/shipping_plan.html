@@ -187,8 +187,8 @@ function shippingPlanEventBind() {
 	$("#shipping_plan_confirm").click(function() {
 		if($("#start_date").val() != "") {
 			var param = shippingPlanGetData();
-			alert(shippingPlanGetDataByAjax(param));
 			shippingPlanGetDataByAjax(param);
+			location.reload();
 		} else {
 			bootalert("날짜를 입력해 주십시오.");
 		}
