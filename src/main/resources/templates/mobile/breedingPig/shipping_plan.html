@@ -86,6 +86,7 @@ function shippingPlanGetDataByAjax(bodyObj) {
 	});
 }
 
+
 /* 그리드 초기화 */
 function shippingPlangridInitialize(gridDataSource) {
 	$('#shipping_plan_grid').footable({
@@ -146,9 +147,9 @@ function shippingPlangridInitialize(gridDataSource) {
 	            formatter: function(value, options, rowData) {
 	            	var url = '/breedingPig/shipping_regist?rowData='+encodedJSON(shippingPlan.gridData[rowData.index]);
 	            	if(value == "N" || value == "n") {
-	            		return '<a href="' + url + '" class="btn btn-xs btn-warning" style="font-size:14px;">등록</a>';
+	            		return '<a href="' + url + '" class="btn btn-xs btn-warning" style="font-size:14px;" data-ajax="false">등록</a>';
 	            	}else {
-	            		return '<a href="' + url + '" class="btn btn-xs btn-default" style="font-size:14px;">수정</a>';
+	            		return '<a href="' + url + '" class="btn btn-xs btn-default" style="font-size:14px;" data-ajax="false">수정</a>';
 	            	}
 	            }
 	        },
@@ -164,11 +165,11 @@ function shippingPlangridInitialize(gridDataSource) {
 	            formatter: function(value, options, rowData) {
 	            	var url = '/breedingPig/sign_regist?rowData='+encodedJSON(shippingPlan.gridData[rowData.index]);
 	                if(value == "N" || value == "n") {
-	                	return '<a href="' + url + '" class="btn btn-xs btn-warning ship-sign" style="font-size:14px;">등록</a>';
+	            		return '<a href="' + url + '" class="btn btn-xs btn-warning" style="font-size:14px;" data-ajax="false">등록</a>';
 	                } else if(shippingPlan.gridData[rowData.index].QTY_SALE == "" || shippingPlan.gridData[rowData.index].WEI_SALE == "") {
 	                	return '';
 	                } else {
-	                	return '<a href="' + url + '" class="btn btn-xs btn-default ship-sign" style="font-size:14px;">출력</a>';
+	                	return '<a href="' + url + '" class="btn btn-xs btn-default ship-sign" style="font-size:14px;" data-ajax="false">출력</a>';
 	                }
 	            }
 	        }, {
