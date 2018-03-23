@@ -245,7 +245,7 @@ function addComma(val) {
 
 
 function commonAjaxForGetData(bodyObj, callBackFunction) {
-	$.get( "/api/getRest?restUrl=" + getUrl("RequestNtx") + "&header=" + encodedJSON(headerInfo()) + "&body=" + encodedJSON(bodyObj), function( data ) {
+	$.get( "/api/getRest?restUrl=" + getUrl("RequestNtx") + "&header=" + encodedJSON(headerInfo()) + "&body=" + encodedJSON(bodyObj) + "&_=" +new Date().getTime(), function( data ) {
 		if(JSON.parse(data).resultCode == "2000") {
 			logOutAlert(JSON.parse(data).resultMessage);
 		} else if(JSON.parse(data).resultCode != "1000" && JSON.parse(data).resultCode != "2000") {
