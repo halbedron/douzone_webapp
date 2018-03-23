@@ -50,16 +50,12 @@ $(document).ready(function() {
 function shippingPlanInitialize() {
 	$("#start_date").css("height", $("#shipping_plan_confirm").css("height"));
 	setTitle("출하 계획");
-	alert(shippingPlan.grid);
-	alert(shippingPlan.gridData);
 	datePickerInitialize();
 	shippingPlangridInitialize();
 	shippingPlanEventBind();
 	setTimeout(function () {
 		shippingPlanGetDataByAjax(shippingPlanGetData());
-		alert(shippingPlan.grid);
-		alert(shippingPlan.gridData);
-	}, 1000);
+	}, 300);
 }
 
 // 데이터 피커 이니셜라이즈
