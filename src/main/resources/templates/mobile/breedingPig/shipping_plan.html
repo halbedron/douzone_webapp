@@ -50,12 +50,16 @@ $(document).ready(function() {
 function shippingPlanInitialize() {
 	$("#start_date").css("height", $("#shipping_plan_confirm").css("height"));
 	setTitle("출하 계획");
+	alert(shippingPlan.grid);
+	alert(shippingPlan.gridData);
 	datePickerInitialize();
 	shippingPlangridInitialize();
 	shippingPlanEventBind();
 	setTimeout(function () {
 		shippingPlanGetDataByAjax(shippingPlanGetData());
-	}, 100);
+		alert(shippingPlan.grid);
+		alert(shippingPlan.gridData);
+	}, 1000);
 }
 
 // 데이터 피커 이니셜라이즈
@@ -77,10 +81,8 @@ function shippingPlanGetData() {
 }
 /* 데이터 받아오는 function */
 function shippingPlanGetDataByAjax(bodyObj) {
-	alert(bodyObj.P_DT_PLAN);
 	commonAjaxForGetData(bodyObj, function(data) {
 		shippingPlan.gridData = data.UP_CG_MOB_SHIP_PLAN_S;
-		alert(data.UP_CG_MOB_SHIP_PLAN_S[0].QTY_SALE);
 		for(var i in shippingPlan.gridData) {
 			shippingPlan.gridData[i].index = Num(i);
 		}
