@@ -246,13 +246,13 @@ function addComma(val) {
 
 function commonAjaxForGetData(bodyObj, callBackFunction) {
 	$.get( "/api/getRest?restUrl=" + getUrl("RequestNtx") + "&header=" + encodedJSON(headerInfo()) + "&body=" + encodedJSON(bodyObj), function( data ) {
-		window.prompt("d","/api/getRest?restUrl=" + getUrl("RequestNtx") + "&header=" + encodedJSON(headerInfo()) + "&body=" + encodedJSON(bodyObj));
 		if(JSON.parse(data).resultCode == "2000") {
 			logOutAlert(JSON.parse(data).resultMessage);
 		} else if(JSON.parse(data).resultCode != "1000" && JSON.parse(data).resultCode != "2000") {
 			bootalert(JSON.parse(data).resultMessage);
 			return false
 		}
+		
 	}).done(function(data){
 		if(JSON.parse(data).resultCode == "1000") {
 			callBackFunction(JSON.parse(data).result.List);
