@@ -147,9 +147,9 @@ function shippingPlangridInitialize(gridDataSource) {
 	            formatter: function(value, options, rowData) {
 	            	var url = '/breedingPig/shipping_regist?rowData='+encodedJSON(shippingPlan.gridData[rowData.index]);
 	            	if(value == "N" || value == "n") {
-	                	return "<button class='btn btn-xs btn-warning' style='font-size:14px;' OnClick='location.replace(\""+url+"\")'>등록</button>";
+	            		return '<a href="' + url + '" class="btn btn-xs btn-warning" style="font-size:14px;" data-ajax="false">등록</a>';
 	            	}else {
-	                	return "<button class='btn btn-xs btn-default' style='font-size:14px;' OnClick='location.replace(\""+url+"\")'>수정</button>";
+	            		return '<a href="' + url + '"btn btn-xs btn-default" style="font-size:14px;" data-ajax="false">수정</a>';
 	            	}
 	            }
 	        },
@@ -165,11 +165,11 @@ function shippingPlangridInitialize(gridDataSource) {
 	            formatter: function(value, options, rowData) {
 	            	var url = '/breedingPig/sign_regist?rowData='+encodedJSON(shippingPlan.gridData[rowData.index]);
 	                if(value == "N" || value == "n") {
-	                	return "<button class='btn btn-xs btn-warning ship-sign' style='font-size:14px;' OnClick='location.replace(\""+url+"\")'>등록</button>";
+	            		return '<a href="' + url + '" class="btn btn-xs btn-warning ship-sign" style="font-size:14px;" data-ajax="false">등록</a>';
 	                } else if(shippingPlan.gridData[rowData.index].QTY_SALE == "" || shippingPlan.gridData[rowData.index].WEI_SALE == "") {
 	                	return '';
 	                } else {
-	                	return "<button class='btn btn-xs btn-default ship-sign' style='font-size:14px;' OnClick='location.replace(\""+url+"\")'>출력</button>";
+	            		return '<a href="' + url + '" class="btn btn-xs btn-default ship-sign" style="font-size:14px;" data-ajax="false">출력</a>';
 	                }
 	            }
 	        }, {
