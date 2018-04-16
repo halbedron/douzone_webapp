@@ -103,7 +103,7 @@ function  signRegistSetData() {
 	    	files.onerror = function() {
 	    		$("#no_img_label").text("이미지가 없습니다.");
 	    	}
-	    	files.src = 'http://1.244.192.47:85/ERP-U/Upload/ship_sign/' + signRegist.rowData.IMG_SIGN_FILE;
+	    	files.src = 'http://1.244.192.47:85/bin/tomcat85/ship_sign/' + signRegist.rowData.IMG_SIGN_FILE;
 	    	
 	    } else {
 	    	$("#sign_img_div").hide();
@@ -203,7 +203,7 @@ function signRegistCallRestApi(bodyObj) {
 					 label: '출력화면으로 이동',
 					 action: function() {
 						signRegist.rowData.IMG_SIGN_FILE = userInfo().CD_COMPANY + signRegist.rowData.NO_SHIP_PLAN + signRegist.rowData.CD_PARTNER + ".png";
-						signRegist.rowData.signImg = "http://1.244.192.47:85/ERP-U/Upload/ship_sign/" + signRegist.rowData.IMG_SIGN_FILE;
+						signRegist.rowData.signImg = "http://1.244.192.47:85/bin/tomcat85/ship_sign/" + signRegist.rowData.IMG_SIGN_FILE;
 						goOutputConfirmaionForm();
 				 	}
 				 }, {

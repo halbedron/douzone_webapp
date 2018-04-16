@@ -188,7 +188,7 @@ $(document).ready(function() {
 				$.post('/canv/confirmationUploadProc'
 					, {strImg : cavImgStr, cd_company: cd_company, no_ship_plan: no_ship_plan, cd_partner: cd_partner}
 					, function(data) {
-						confirmation.src = 'http://1.244.192.47:85/ERP-U/Upload/ship_confirmation/' + confirmation.data.IMG_SIGN_FILE.replace("jpg", "png")
+						confirmation.src = 'http://1.244.192.47:85/bin/tomcat85/ship_confirmation/' + confirmation.data.IMG_SIGN_FILE.replace("jpg", "png")
 				});
 			}, 400);
 		});
