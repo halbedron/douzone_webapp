@@ -103,7 +103,7 @@ public class ShppingManagementController extends WebMvcConfigurerAdapter {
 		ModelAndView mav = new ModelAndView("/breedingPig/sign_regist");
 		mav.addObject("jsonObj", json_return.toString());
 //		model.addAttribute("jsonObj", json_return.toString());
-		mav.addObject("sign", "http://1.244.192.47:85/bin/tomcat85/ship_sign/"+sign);
+		mav.addObject("sign", "http://1.244.192.47:85/ERP-U/Upload/ship_sign/"+sign);
 //		model.addAttribute("sign", "http://1.244.192.47:85/ERP-U/Upload/ship_sign/"+sign);
 		return mav;
 	}
@@ -120,7 +120,7 @@ public class ShppingManagementController extends WebMvcConfigurerAdapter {
 		JSONObject paramJson =(JSONObject) json_return.get("paramJson");
 		System.out.println(paramJson.get("img_sign_file"));
 
-		String url = "http://1.244.192.47:85/bin/tomcat85/ship_sign/" + paramJson.get("img_sign_file");
+		String url = "http://1.244.192.47:85/ERP-U/Upload/ship_sign/" + paramJson.get("img_sign_file");
 		System.out.println(url);
 		String imageData = service.getByteArrayFromImageURL(url);
 

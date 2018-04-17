@@ -111,7 +111,7 @@ public class Application extends WebMvcConfigurerAdapter {
 	    return new WebMvcConfigurerAdapter() {
 	        @Override
 	        public void addCorsMappings(CorsRegistry registry) {
-	            registry.addMapping("http://1.244.192.47:85/bin/tomcat85/ship_sign/**")
+	            registry.addMapping("http://1.244.192.47:85/ERP-U/Upload/ship_sign/**")
 			            .allowedOrigins("http://localhost:8080", "http://1.244.192.47:8080")
 			            .allowedMethods("PUT","DELETE", "GET", "POST").allowedHeaders("*").maxAge(3000);
 	        }
