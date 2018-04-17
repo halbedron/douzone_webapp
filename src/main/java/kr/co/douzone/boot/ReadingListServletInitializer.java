@@ -1,6 +1,7 @@
 package kr.co.douzone.boot;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;

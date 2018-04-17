@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +37,9 @@ public class ReportController {
 	private static final Logger logger = LoggerFactory.getLogger(ViewController.class);
 	
 	ShppingManagementController shipping = new ShppingManagementController();
+
+	@Value("${img.upload.dir}")
+	String imgUploadDir;
 	
 	/* 종돈공급 내역서 */
 	@RequestMapping(path = "/report/breeding_pig_supply_statement", method = RequestMethod.GET)
@@ -87,15 +91,18 @@ public class ReportController {
 	 * 종돈공급내역서
 	 * 이미지 업로드
 	  */
+
 	@RequestMapping(value = "/canv/supplyUploadProc", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	@ResponseBody
 	public String supplyUploadProc(HttpServletRequest request, @RequestParam("strImg") String strImg,
 			@RequestParam("cd_company") String cd_company, @RequestParam("dt_ship") String dt_ship,
 			@RequestParam("cd_partner") String cd_partner) throws Throwable {
 		
+
+		
 		System.out.println("page_supplyUpload > " + strImg);
 		String uploadPath = "\\supply_statment\\";
-		String folder = System.getProperty("catalina.home") + uploadPath;
+		String folder = imgUploadDir + uploadPath;
 		String fullpath = "";
 		String[] strParts = strImg.split(",");
 		String rstStrimg = strParts[1];
@@ -135,7 +142,7 @@ public class ReportController {
 		
 		System.out.println("page_accountUpload > " + strImg);
 		String uploadPath = "\\bill\\";
-		String folder = System.getProperty("catalina.home") + uploadPath;
+		String folder = imgUploadDir + uploadPath;
 		String fullpath = "";
 		String[] strParts = strImg.split(",");
 		String rstStrimg = strParts[1];

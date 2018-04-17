@@ -26,6 +26,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +53,9 @@ public class ShppingManagementController extends WebMvcConfigurerAdapter {
 	@Autowired
 	ShppingManagementService service;
 
+	@Value("${img.upload.dir}")
+	String imgUploadDir;
+	
 	/*
 	 * 출하 계획
 	 */
@@ -174,6 +178,7 @@ public class ShppingManagementController extends WebMvcConfigurerAdapter {
 	 * 사인 등록
 	 * 이미지 저장
 	 */
+	
 	@RequestMapping(value = "/canv/canvasUploadProc", method = RequestMethod.POST, produces = "application/text; charset=utf8")
 	@ResponseBody
 	public String canvasUploadProc(HttpServletRequest request, @RequestParam("strImg") String strImg,
@@ -182,7 +187,7 @@ public class ShppingManagementController extends WebMvcConfigurerAdapter {
 		
 		System.out.println("page_canvasUpload > " + strImg);
 		String uploadPath = "\\ship_sign\\";
-		String folder = System.getProperty("catalina.home") + uploadPath;
+		String folder = imgUploadDir + uploadPath;
 		String fullpath = "";
 		String[] strParts = strImg.split(",");
 		String rstStrimg = strParts[1];
@@ -224,7 +229,7 @@ public class ShppingManagementController extends WebMvcConfigurerAdapter {
 		System.out.println("page_confirmationUpload > " + strImg);
 		String uploadPath = "\\ship_confirmation\\";
 		String fileNm = cd_company + no_ship_plan + cd_partner;
-		String folder = System.getProperty("catalina.home") + uploadPath;
+		String folder = imgUploadDir + uploadPath;
 		String fullpath = "";
 		String[] strParts = strImg.split(",");
 		
