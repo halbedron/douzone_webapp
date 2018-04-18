@@ -53,7 +53,7 @@ public class ShppingManagementController extends WebMvcConfigurerAdapter {
 	@Autowired
 	ShppingManagementService service;
 
-	@Value("${img.upload.dir}")
+	@Value("${img.upload.dir.path}")
 	String imgUploadDir;
 	
 	/*
