@@ -38,7 +38,7 @@ public class ReportController {
 	
 	ShppingManagementController shipping = new ShppingManagementController();
 
-	@Value("${img.upload.dir.path}")
+	@Value("${img.upload.dir}")
 	String imgUploadDir;
 	
 	/* 종돈공급 내역서 */
