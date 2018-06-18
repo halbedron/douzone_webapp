@@ -103,7 +103,7 @@ function  signRegistSetData() {
 	    	files.onerror = function() {
 	    		$("#no_img_label").text("이미지가 없습니다.");
 	    	}
-	    	files.src = 'http://1.244.192.47:85/ERP-U/Upload/ship_sign/' + signRegist.rowData.IMG_SIGN_FILE;
+	    	files.src = 'http://1.244.192.47:85/ERP-U/Upload/ship_sign/' + signRegist.rowData.IMG_SIGN_FILE + "?" +new Date().getTime();
 	    	
 	    } else {
 	    	$("#sign_img_div").hide();

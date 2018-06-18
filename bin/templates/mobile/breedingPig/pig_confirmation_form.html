@@ -321,7 +321,7 @@ function confirmationFormSetData(data) {
 
 function confirmationFormEventBind() {
 	$("#output_img").click(function() {
-		$("#confirmationImg").attr('src', confirmation.src);
+		$("#confirmationImg").attr('src', confirmation.src.substring(0,confirmation.src.indexOf('?')));
 	});
 	
 	$("#confirmation_pre_view").click(function() {
