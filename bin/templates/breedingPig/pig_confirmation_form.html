@@ -92,6 +92,12 @@
 						</div>
 					</div>
 					<div class="row">
+						<h4 class="col-xs-5 col-sm-4 control-label " ><strong>선발담당 :</strong></h4>
+						<div class="col-xs-7 col-sm-8 pad-left-0">
+							<h3><span id="selector"></span></h3>
+						</div>
+					</div>
+					<div class="row">
 						<h4 class="col-xs-5 col-sm-4 control-label " ><strong>영업담당 :</strong></h4>
 						<div class="col-xs-7 col-sm-8 pad-left-0">
 							<h3><span id="salesCharge"></span></h3>
@@ -271,6 +277,10 @@ function confirmationFormSetData(data) {
 		
 		$("#carNum").text("");
 		$("#carNum").text(data.NO_CAR);
+		
+		/* 20190507  선발담당 추가 */
+		$("#selector").text("");
+		$("#selector").text(data.SELECTOR);
 		
 		var nmSalesArr = data.NM_SALE.split(" ")
 		$("#salesCharge").text("");
